@@ -34,6 +34,8 @@
    dist/角色效率岛.zip
    ```
 
+如果你是成品包使用者，不需要改代码或换图，可以直接看 [零基础安装和使用教程](docs/BEGINNER_INSTALL_AND_USE.md)。
+
 ## 运行要求
 
 - macOS 13 或更高版本。
@@ -53,6 +55,7 @@ templates/character-profile.json                    角色资料表
 docs/COPYWRITING.md                                 要写哪些文案
 docs/IMAGE_SLOTS.md                                 图片放哪里、怎样对齐
 docs/AI_CUSTOMIZATION.md                            用不同 AI 工具定制
+docs/BEGINNER_INSTALL_AND_USE.md                    给成品用户看的安装和使用教程
 docs/RELEASE.md                                     构建与发布检查
 build_app.sh                                        一键构建并生成 zip
 ```
