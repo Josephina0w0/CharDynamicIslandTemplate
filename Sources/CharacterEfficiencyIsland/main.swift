@@ -10,6 +10,7 @@ enum CharacterMode {
     case alert
     case ai
     case water
+    case reminderFirst
     case reminderSecond
     case reminderThird
     case reminderFourth
@@ -21,7 +22,7 @@ enum CharacterMode {
         case .breakTime: return "休息倒计时"
         case .alert: return "角色提醒"
         case .ai: return "AI 任务完成"
-        case .water: return "喝水时间"
+        case .water, .reminderFirst: return "补充水分"
         case .reminderSecond, .reminderThird, .reminderFourth: return "角色提醒"
         }
     }
@@ -32,8 +33,9 @@ enum CharacterMode {
         case .working: return "working"
         case .breakTime: return "break"
         case .alert: return "alert"
-        case .ai: return "alert"
+        case .ai: return "ai"
         case .water: return "water"
+        case .reminderFirst: return "reminder-first"
         case .reminderSecond: return "reminder-second"
         case .reminderThird: return "reminder-third"
         case .reminderFourth: return "reminder-fourth"
@@ -45,9 +47,9 @@ enum CharacterMode {
         case .idle: return "panel-idle"
         case .working: return "panel-working"
         case .breakTime: return "panel-break"
-        case .water: return "panel-water"
+        case .water, .reminderFirst: return "panel-water"
         case .alert: return "alert"
-        case .ai: return "alert"
+        case .ai: return "panel-ai"
         case .reminderSecond: return "panel-reminder-second"
         case .reminderThird: return "panel-reminder-third"
         case .reminderFourth: return "panel-reminder-fourth"
@@ -62,6 +64,7 @@ enum CharacterMode {
         case .alert: return "bell.fill"
         case .ai: return "sparkles"
         case .water: return "cup.and.saucer.fill"
+        case .reminderFirst: return "drop.fill"
         case .reminderSecond: return "figure.walk"
         case .reminderThird: return "clock.badge.checkmark"
         case .reminderFourth: return "moon.zzz.fill"
@@ -225,7 +228,7 @@ final class AppState {
 
     let watchFolder: URL = FileManager.default
         .homeDirectoryForCurrentUser
-        .appendingPathComponent("Documents/Codex/.character-efficiency-island-ai-watch", isDirectory: true)
+        .appendingPathComponent("Documents/Codex/.wenzhou-ai-watch", isDirectory: true)
     let codexThreadHistoryDB: URL = FileManager.default
         .homeDirectoryForCurrentUser
         .appendingPathComponent(".codex/thread_history_1.sqlite")
@@ -237,7 +240,7 @@ final class AppState {
         .appendingPathComponent("Library/Application Support/Cursor", isDirectory: true)
     let terminalBridgeFolder: URL = FileManager.default
         .homeDirectoryForCurrentUser
-        .appendingPathComponent("Documents/Codex/.character-efficiency-island-ai-watch/terminal", isDirectory: true)
+        .appendingPathComponent("Documents/Codex/.wenzhou-ai-watch/terminal", isDirectory: true)
 
     init() {
         let storedSettings = Self.loadStoredSettings()
@@ -722,10 +725,19 @@ final class ResizableIslandView: NSVisualEffectView {
 
 @MainActor
 final class IslandController {
-    private let panelSize = NSSize(width: 316, height: 68)
+    private let minimumIslandBodyWidth: CGFloat = 346
+    private let maximumIslandBodyWidth: CGFloat = 500
+    private let islandBodyHeight: CGFloat = 84
+    private var islandBodyWidth: CGFloat = 500
+    private var islandBodySize: NSSize {
+        NSSize(width: islandBodyWidth, height: islandBodyHeight)
+    }
+    private let panelSize = NSSize(width: 580, height: 144)
+    private let bodyBottomOverflow: CGFloat = 60
     private let minScale = 0.75
     private let maxScale = 1.6
     private let panel: NSPanel
+    private let rootView: NSView
     private let container: ResizableIslandView
     private let iconView = NSImageView()
     private let titleLabel = NSTextField(labelWithString: "")
@@ -741,6 +753,7 @@ final class IslandController {
     var onScaleChanged: ((Double) -> Void)?
 
     init() {
+        rootView = NSView(frame: NSRect(origin: .zero, size: panelSize))
         panel = NSPanel(
             contentRect: NSRect(origin: .zero, size: panelSize),
             styleMask: [.borderless, .nonactivatingPanel],
@@ -749,13 +762,13 @@ final class IslandController {
         )
         panel.isOpaque = false
         panel.backgroundColor = .clear
-        panel.level = .floating
+        panel.level = .statusBar
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
         panel.hidesOnDeactivate = false
         panel.ignoresMouseEvents = true
         panel.acceptsMouseMovedEvents = true
 
-        container = ResizableIslandView(baseSize: panelSize)
+        container = ResizableIslandView(baseSize: NSSize(width: maximumIslandBodyWidth, height: islandBodyHeight))
         container.material = .hudWindow
         container.blendingMode = .withinWindow
         container.state = .active
@@ -774,7 +787,10 @@ final class IslandController {
             self.onScaleChanged?(self.islandScale)
             self.updateHoverVisibility()
         }
-        panel.contentView = container
+        rootView.wantsLayer = true
+        rootView.layer?.backgroundColor = NSColor.clear.cgColor
+        panel.contentView = rootView
+        rootView.addSubview(container)
 
         iconView.symbolConfiguration = NSImage.SymbolConfiguration(pointSize: 16, weight: .semibold)
         iconView.contentTintColor = NSColor(calibratedRed: 0.94, green: 0.18, blue: 0.2, alpha: 1)
@@ -802,7 +818,7 @@ final class IslandController {
         container.addSubview(titleLabel)
         container.addSubview(detailLabel)
         container.addSubview(timerLabel)
-        container.addSubview(imageView)
+        rootView.addSubview(imageView, positioned: .above, relativeTo: container)
         layoutContent()
 
         hoverTimer = Timer.scheduledTimer(withTimeInterval: 0.08, repeats: true) { [weak self] _ in
@@ -817,27 +833,21 @@ final class IslandController {
         guard abs(clamped - islandScale) > 0.001 else { return }
 
         let oldFrame = panel.frame
-        let center = NSPoint(x: oldFrame.midX, y: oldFrame.midY)
         islandScale = clamped
 
         let scaledSize = NSSize(
             width: panelSize.width * clamped,
             height: panelSize.height * clamped
         )
-        var frame = NSRect(origin: oldFrame.origin, size: scaledSize)
-        if keepCurrentCenter, oldFrame.width > 0, oldFrame.height > 0 {
-            frame.origin = NSPoint(x: center.x - scaledSize.width / 2, y: center.y - scaledSize.height / 2)
-        }
+        let frame = NSRect(origin: oldFrame.origin, size: scaledSize)
 
         panel.setFrame(frame, display: true)
-        container.frame = NSRect(origin: .zero, size: scaledSize)
-        container.bounds = NSRect(origin: .zero, size: scaledSize)
+        rootView.frame = NSRect(origin: .zero, size: scaledSize)
+        rootView.bounds = NSRect(origin: .zero, size: scaledSize)
         container.needsLayout = true
         layoutContent()
 
-        if !keepCurrentCenter {
-            position()
-        }
+        position()
         if persist {
             onScaleChanged?(clamped)
         }
@@ -904,39 +914,113 @@ final class IslandController {
 
     private func layoutContent() {
         let scale = CGFloat(islandScale)
-        let size = NSSize(width: panelSize.width * scale, height: panelSize.height * scale)
-        container.frame = NSRect(origin: .zero, size: size)
+        iconView.symbolConfiguration = NSImage.SymbolConfiguration(pointSize: 24 * scale, weight: .semibold)
+        titleLabel.font = .systemFont(ofSize: 20 * scale, weight: .bold)
+        detailLabel.font = .systemFont(ofSize: 12 * scale, weight: .medium)
+        timerLabel.font = .monospacedDigitSystemFont(ofSize: 18 * scale, weight: .semibold)
+
+        let leftPadding = 26 * scale
+        let imageWidth = 60 * scale
+        let imageHeight = 72 * scale
+        let imageRightPadding = 18 * scale
+        let textGap = 10 * scale
+        let rowGap = 6 * scale
+        let titleTop = 16 * scale
+        let iconSize = 26 * scale
+        let titleHeight = 28 * scale
+        let detailHeight = 18 * scale
+        let titleX = leftPadding + iconSize + textGap
+        let timerWidth = timerLabel.stringValue.isEmpty ? 0 : min(timerLabel.intrinsicContentSize.width + 6 * scale, 90 * scale)
+        let timerGap = timerWidth > 0 ? 12 * scale : 0
+        let longestTextWidth = max(
+            detailLabel.intrinsicContentSize.width,
+            titleLabel.intrinsicContentSize.width + timerGap + timerWidth
+        ) / scale
+        let rightSideAllowance: CGFloat
+        switch currentMode {
+        case .breakTime:
+            rightSideAllowance = 115
+        case .water:
+            rightSideAllowance = 14 + 110 + 18
+        case .ai, .alert:
+            rightSideAllowance = 116.5
+        case .reminderFourth:
+            rightSideAllowance = 127
+        default:
+            rightSideAllowance = 14 + 60 + 18
+        }
+        let textFitPadding: CGFloat = 16
+        islandBodyWidth = min(
+            maximumIslandBodyWidth,
+            max(
+                minimumIslandBodyWidth,
+                ceil(titleX / scale + longestTextWidth + rightSideAllowance + textFitPadding)
+            )
+        )
+
+        let size = NSSize(width: islandBodyWidth * scale, height: islandBodyHeight * scale)
+        let bodyY = bodyBottomOverflow * scale
+        container.frame = NSRect(x: 0, y: bodyY, width: size.width, height: size.height)
         container.bounds = NSRect(origin: .zero, size: size)
         container.layer?.cornerRadius = 20 * scale
 
-        iconView.symbolConfiguration = NSImage.SymbolConfiguration(pointSize: 16 * scale, weight: .semibold)
-        titleLabel.font = .systemFont(ofSize: 16 * scale, weight: .bold)
-        detailLabel.font = .systemFont(ofSize: 10 * scale, weight: .medium)
-        timerLabel.font = .monospacedDigitSystemFont(ofSize: 14 * scale, weight: .semibold)
-
-        let leftPadding = 20 * scale
-        let imageWidth = 48 * scale
-        let imageHeight = 58 * scale
-        let imageRightPadding = 12 * scale
-        let textGap = 8 * scale
-        let rowGap = 7 * scale
-        let titleTop = 16 * scale
-        let iconSize = 20 * scale
-        let titleHeight = 22 * scale
-        let detailHeight = 14 * scale
-        let imageFrame = NSRect(
-            x: size.width - imageRightPadding - imageWidth,
-            y: 5 * scale,
-            width: imageWidth,
-            height: imageHeight
-        )
+        let imageFrame: NSRect
+        switch currentMode {
+        case .breakTime:
+            imageFrame = NSRect(
+                x: (islandBodyWidth - 101) * scale,
+                y: 43.3 * scale,
+                width: 160 * scale,
+                height: 86 * scale
+            )
+        case .idle:
+            imageFrame = NSRect(
+                x: size.width - imageRightPadding - imageWidth,
+                y: 45 * scale,
+                width: imageWidth,
+                height: imageHeight
+            )
+        case .reminderFourth:
+            imageFrame = NSRect(
+                x: size.width - 113 * scale,
+                y: -0.4 * scale,
+                width: 123 * scale,
+                height: 176 * scale
+            )
+        case .water:
+            imageFrame = NSRect(
+                x: size.width - imageRightPadding - 110 * scale,
+                y: 7 * scale,
+                width: 110 * scale,
+                height: 158 * scale
+            )
+        case .ai, .alert:
+            imageFrame = NSRect(
+                x: size.width - 102.5 * scale,
+                y: 7 * scale,
+                width: 110 * scale,
+                height: 158 * scale
+            )
+        default:
+            imageFrame = NSRect(
+                x: size.width - imageRightPadding - imageWidth,
+                y: bodyY + 6 * scale,
+                width: imageWidth,
+                height: imageHeight
+            )
+        }
         imageView.frame = imageFrame
 
-        let titleX = leftPadding + iconSize + textGap
         let titleY = size.height - titleTop - titleHeight
-        let availableTextRight = imageFrame.minX - 10 * scale
-        let timerWidth = timerLabel.stringValue.isEmpty ? 0 : min(timerLabel.intrinsicContentSize.width + 4 * scale, 70 * scale)
-        let timerGap = timerWidth > 0 ? 10 * scale : 0
+        let availableTextRight = imageFrame.minX - 14 * scale
+        let availableDetailWidth = max(30 * scale, availableTextRight - titleX)
+        if detailLabel.intrinsicContentSize.width > availableDetailWidth {
+            var detailPointSize: CGFloat = 12
+            repeat {
+                detailPointSize -= 0.25
+                detailLabel.font = .systemFont(ofSize: detailPointSize * scale, weight: .medium)
+            } while detailPointSize > 10.5 && detailLabel.intrinsicContentSize.width > availableDetailWidth
+        }
         let titleWidth = max(30 * scale, availableTextRight - titleX - timerWidth - timerGap)
 
         iconView.frame = NSRect(
@@ -955,17 +1039,18 @@ final class IslandController {
         detailLabel.frame = NSRect(
             x: titleX,
             y: titleY - rowGap - detailHeight,
-            width: max(30 * scale, availableTextRight - titleX),
+            width: availableDetailWidth,
             height: detailHeight
         )
     }
 
     private func position() {
         if let screen = NSScreen.main {
-            let width = panel.frame.width
-            let height = panel.frame.height
-            let x = screen.frame.midX - width / 2
-            let y = screen.frame.maxY - height - 30
+            let scale = CGFloat(islandScale)
+            let x = screen.frame.midX - islandBodySize.width * scale / 2
+            // Attach the island to the bottom edge of the macOS menu bar so it
+            // stays below the camera/notch area instead of touching the screen top.
+            let y = screen.visibleFrame.maxY - panelSize.height * scale
             panel.setFrameOrigin(NSPoint(x: x, y: y))
         }
     }
@@ -978,13 +1063,14 @@ final class IslandController {
 
     func containsMouse(expandedBy padding: CGFloat = 0) -> Bool {
         guard panel.isVisible else { return false }
-        return NSMouseInRect(NSEvent.mouseLocation, panel.frame.insetBy(dx: -padding, dy: -padding), false)
+        return NSMouseInRect(NSEvent.mouseLocation, bodyFrameOnScreen().insetBy(dx: -padding, dy: -padding), false)
     }
 
     private func updateHoverVisibility() {
         guard panel.isVisible else { return }
         let mouse = NSEvent.mouseLocation
-        let nearResizeEdge = container.isResizing || container.isNearResizeEdge(globalMouse: mouse, panelFrame: panel.frame)
+        let bodyFrame = bodyFrameOnScreen()
+        let nearResizeEdge = container.isResizing || container.isNearResizeEdge(globalMouse: mouse, panelFrame: bodyFrame)
         panel.ignoresMouseEvents = !nearResizeEdge
 
         guard currentMode != .breakTime else {
@@ -992,7 +1078,7 @@ final class IslandController {
             return
         }
 
-        let hoverFrame = panel.frame.insetBy(dx: -6, dy: -6)
+        let hoverFrame = bodyFrame.insetBy(dx: -6, dy: -6)
         if nearResizeEdge {
             panel.alphaValue = 0.62
         } else {
@@ -1002,6 +1088,16 @@ final class IslandController {
 
     private func loadImage(named name: String) -> NSImage? {
         ImageResources.load(named: name)
+    }
+
+    private func bodyFrameOnScreen() -> NSRect {
+        let scale = CGFloat(islandScale)
+        return NSRect(
+            x: panel.frame.minX,
+            y: panel.frame.minY + bodyBottomOverflow * scale,
+            width: islandBodySize.width * scale,
+            height: islandBodySize.height * scale
+        )
     }
 }
 
@@ -1022,7 +1118,7 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
     private let resetAction: () -> Void
     private let resetAllAction: () -> Void
     private let titleLabel = NSTextField(labelWithString: "角色工作中")
-    private let subtitleLabel = NSTextField(labelWithString: "当前计划正在执行，请保持节奏。")
+    private let subtitleLabel = NSTextField(labelWithString: "节奏已经安排好，照计划推进吧。")
     private let workLabel = NSTextField(labelWithString: "工作 00:00")
     private let breakLabel = NSTextField(labelWithString: "休息 00:00")
     private let aiLabel = NSTextField(labelWithString: "AI 完成 0")
@@ -1183,7 +1279,7 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
         islandScaleRow.addArrangedSubview(actionButton("重置小岛大小", #selector(resetIslandScale)))
         stack.addArrangedSubview(islandScaleRow)
 
-        addCheckbox("nosleep", "禁止休眠", enabled: state.preventSleepEnabled, to: stack)
+        addCheckbox("nosleep", "工作时防止休眠", enabled: state.preventSleepEnabled, to: stack)
         addCheckbox("login", "登录时启动角色", enabled: state.startAtLoginEnabled, to: stack)
 
         let buttonRowA = NSStackView()
@@ -1191,7 +1287,7 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
         buttonRowA.spacing = 8
         buttonRowA.addArrangedSubview(actionButton("休息 5 分钟", #selector(startBreak)))
         buttonRowA.addArrangedSubview(actionButton("结束休息", #selector(endBreak)))
-        buttonRowA.addArrangedSubview(actionButton("暂停/继续", #selector(togglePause)))
+        buttonRowA.addArrangedSubview(actionButton("暂停／继续", #selector(togglePause)))
         stack.addArrangedSubview(buttonRowA)
 
         let buttonRowC = NSStackView()
@@ -1294,6 +1390,8 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
             return CharacterPlacement(height: 282, bottom: 104, trailing: 12)
         case .water:
             return CharacterPlacement(height: 238, bottom: 128, trailing: -32)
+        case .reminderFirst:
+            return CharacterPlacement(height: 238, bottom: 128, trailing: -32)
         case .idle:
             return CharacterPlacement(height: 330, bottom: 52, trailing: 42)
         case .reminderSecond:
@@ -1302,20 +1400,25 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
             return CharacterPlacement(height: 232, bottom: 150, trailing: 42)
         case .reminderFourth:
             return CharacterPlacement(height: 310, bottom: 64, trailing: 42)
-        case .alert, .ai:
+        case .alert:
+            return CharacterPlacement(height: 230, bottom: 150, trailing: 42)
+        case .ai:
             return CharacterPlacement(height: 230, bottom: 150, trailing: 42)
         }
     }
 
     private func subtitle(for mode: CharacterMode) -> String {
         switch mode {
-        case .idle: return "暂无异常，等待下一项任务。"
-        case .working: return "当前计划正在执行，请保持节奏。"
-        case .breakTime: return "扫过小岛或状态栏可暂停/继续倒计时。"
-        case .alert: return "当前效率偏离计划，请校准。"
-        case .ai: return "检测到 AI 任务完成，建议验收。"
-        case .water: return "喝水时间到了。"
-        case .reminderSecond, .reminderThird, .reminderFourth: return "定时提醒到了，轻轻校准一下。"
+        case .idle: return "暂时没有新任务。整理好状态，等下一步。"
+        case .working: return "节奏已经安排好，照计划推进吧。"
+        case .breakTime: return "先恢复状态。休息也是计划的一部分。"
+        case .alert: return "嗯？提醒时间到。"
+        case .ai: return "结果已经准备好。先验收，再决定下一步。"
+        case .water: return "喝口水。别把身体状态留到最后处理。"
+        case .reminderFirst: return "喝口水。状态稳定，后面的安排才不会乱。"
+        case .reminderSecond: return "起来走一走。调整一下，回来会更专注。"
+        case .reminderThird: return "看一下当前进度。保留有效的，调整不合适的。"
+        case .reminderFourth: return "今天先收好尾。清楚地结束，明天才容易开始。"
         }
     }
 
@@ -1450,13 +1553,13 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
             if !state.showPersistentIsland {
                 island.clearPersistentSnapshot()
             } else {
-                island.show(mode: state.isOnBreak ? .breakTime : state.mode, detail: "顶部小岛已恢复。")
+                island.show(mode: state.isOnBreak ? .breakTime : state.mode, detail: "顶部小岛已恢复。继续按当前节奏推进。")
             }
         case "nosleep":
             state.enableNoSleep(sender.state == .on)
         case "login":
             state.startAtLoginEnabled = sender.state == .on
-            island.show(mode: .alert, detail: "登录启动需要打包成 .app 后接入。当前先保存开关状态。", autoHideAfter: 4)
+            island.show(mode: .alert, detail: "登录启动设置已保存。", autoHideAfter: 4)
         default:
             if let id = sender.identifier?.rawValue.replacingOccurrences(of: "reminder-enabled-", with: ""),
                sender.identifier?.rawValue.hasPrefix("reminder-enabled-") == true {
@@ -1493,7 +1596,7 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
     @objc private func resetIslandScale() {
         island.resetScale()
         refresh()
-        island.show(mode: state.isOnBreak ? .breakTime : state.mode, detail: "顶部小岛大小已重置。", autoHideAfter: 4)
+        island.show(mode: state.isOnBreak ? .breakTime : state.mode, detail: "顶部小岛已恢复默认大小。", autoHideAfter: 4)
     }
 
     @objc private func startBreak() {
@@ -1506,7 +1609,7 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
         state.breakRemaining = 5 * 60
         island.show(
             mode: .breakTime,
-            detail: "休息已开始。扫过小岛或状态栏可暂停倒计时。",
+            detail: "先休息五分钟。倒计时已经开始。",
             timer: state.formatted(state.breakRemaining),
             autoHideAfter: state.showPersistentIsland ? nil : 5
         )
@@ -1516,7 +1619,7 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
 
     @objc private func endBreak() {
         guard state.isOnBreak else {
-            island.show(mode: .working, detail: "当前不在休息计时中。", autoHideAfter: 3)
+            island.show(mode: .working, detail: "现在没有进行中的休息计时。", autoHideAfter: 3)
             return
         }
         state.isOnBreak = false
@@ -1526,7 +1629,7 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
         state.wasMouseInBreakToggleArea = false
         state.mode = state.isPaused ? .idle : .working
         state.clearPanelVisualMode()
-        island.show(mode: state.mode, detail: "休息已手动结束，继续执行当前计划。", autoHideAfter: 4)
+        island.show(mode: state.mode, detail: "状态调整好了，我们继续。", autoHideAfter: 4)
         refresh()
     }
 
@@ -1536,7 +1639,7 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
         state.clearPanelVisualMode()
         island.show(
             mode: state.mode,
-            detail: state.isPaused ? "计时已暂停。恢复前不计入工作或休息。" : "计时已恢复。继续执行当前计划。",
+            detail: state.isPaused ? "计时已暂停。准备好后再继续。" : "计时已恢复。状态和节奏都恢复了吗？",
             autoHideAfter: 4
         )
         refresh()
@@ -1547,7 +1650,7 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
         state.recordWaterCheckin()
         state.setPanelVisualMode(.water, duration: duration)
         NSSound(named: .init("Ping"))?.play()
-        island.show(mode: .water, detail: "喝水打卡 +1。今天第 \(state.waterCheckins) 次喝水。", autoHideAfter: duration)
+        island.show(mode: .water, detail: "喝水打卡 +1。今天第 \(state.waterCheckins) 次，保持得很好。", autoHideAfter: duration)
         refresh()
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
             self?.refresh()
@@ -1557,7 +1660,7 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
     @objc private func resetCounters() {
         resetAction()
         state.clearPanelVisualMode()
-        island.show(mode: .idle, detail: "今天的记录已清零。历史累计还在。", autoHideAfter: 4)
+        island.show(mode: .idle, detail: "今天的记录已清零，历史累计仍然保留。", autoHideAfter: 4)
         refresh()
     }
 
@@ -1572,14 +1675,14 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         resetAllAction()
         state.clearPanelVisualMode()
-        island.show(mode: .idle, detail: "全部记录已清空。提醒设置保留。", autoHideAfter: 4)
+        island.show(mode: .idle, detail: "全部记录已清空，提醒设置仍然保留。", autoHideAfter: 4)
         refresh()
     }
 
     @objc private func openRecords() {
         state.saveTodayRecord()
         NSWorkspace.shared.open(state.recordsFolderURL())
-        island.show(mode: .alert, detail: "已打开本地记录文件夹。", autoHideAfter: 4)
+        island.show(mode: .alert, detail: "本地记录文件夹已打开。", autoHideAfter: 4)
     }
 
     @objc private func openInputPermissions() {
@@ -1588,7 +1691,7 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
         if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent") {
             NSWorkspace.shared.open(url)
         }
-        island.show(mode: .alert, detail: "请在输入监控里开启角色效率岛；若仍不动，再确认辅助功能也已开启。", autoHideAfter: 7)
+        island.show(mode: .alert, detail: "请为角色效率岛开启输入监控；如果统计仍未开始，再检查辅助功能权限。", autoHideAfter: 7)
         refresh()
     }
 
@@ -1599,7 +1702,7 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
         if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent") {
             NSWorkspace.shared.open(url)
         }
-        island.show(mode: .alert, detail: "已重置输入监控记录。请重新勾选角色效率岛，然后重启 App。", autoHideAfter: 8)
+        island.show(mode: .alert, detail: "输入监控记录已重置。请重新勾选角色效率岛，然后重启 App。", autoHideAfter: 8)
         refresh()
     }
 
@@ -1758,7 +1861,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self.panelController.refresh()
         }
         updateInputPermissionStatus(prompt: false)
-        prepareWatchFolder()
+        if ProcessInfo.processInfo.environment["HUANG_SHAOTIAN_SKIP_WATCH_SETUP"] != "1" {
+            prepareWatchFolder()
+        }
         refreshAIToolStatus()
         seedKnownCodexTurns()
         setupMenuBar()
@@ -1768,6 +1873,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         setupTimer()
         _ = updateAutomaticIdleState()
         showPersistentStatus()
+        applyPreviewModeIfRequested()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -1796,7 +1902,78 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = item
     }
 
+    private func applyPreviewModeIfRequested() {
+        guard let rawMode = ProcessInfo.processInfo.environment["CHARACTER_ISLAND_PREVIEW_MODE"] else { return }
+        state.remindersEnabled = false
+        state.aiRemindersEnabled = false
+
+        if rawMode == "break-island" {
+            state.isOnBreak = true
+            state.breakRemaining = 5 * 60
+            state.mode = .breakTime
+            showPersistentStatus()
+            return
+        }
+
+        if rawMode == "working-island" {
+            state.isOnBreak = false
+            state.mode = .working
+            showPersistentStatus()
+            return
+        }
+
+        if rawMode == "long-island" {
+            timer?.invalidate()
+            timer = nil
+            island.show(
+                mode: .reminderFourth,
+                detail: "今天先收好尾。清楚地结束，明天才容易开始。",
+                autoHideAfter: nil
+            )
+            return
+        }
+
+        if rawMode == "alert-island" || rawMode == "ai-island" {
+            timer?.invalidate()
+            timer = nil
+            let previewMode: CharacterMode = rawMode == "ai-island" ? .ai : .alert
+            let previewDetail = previewMode == .ai
+                ? "结果已经准备好。先验收，再决定下一步。"
+                : "嗯？提醒时间到。"
+            island.show(mode: previewMode, detail: previewDetail, autoHideAfter: nil)
+            return
+        }
+
+        let mode: CharacterMode
+        switch rawMode {
+        case "break": mode = .breakTime
+        case "idle": mode = .idle
+        case "alert": mode = .alert
+        case "ai": mode = .ai
+        case "water": mode = .water
+        case "reminder-first": mode = .reminderFirst
+        case "reminder-second": mode = .reminderSecond
+        case "reminder-third": mode = .reminderThird
+        case "reminder-fourth": mode = .reminderFourth
+        default: mode = .working
+        }
+
+        if mode != .working {
+            state.setPanelVisualMode(mode, duration: 60 * 60)
+        }
+        panelController.refresh()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self, let button = self.statusItem?.button, let panel = self.controlPanel else { return }
+            _ = self.panelController.view
+            self.panelController.refresh()
+            self.positionControlPanel(panel, under: button)
+            panel.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+        }
+    }
+
     private func setupPopover() {
+        let isPreviewMode = ProcessInfo.processInfo.environment["CHARACTER_ISLAND_PREVIEW_MODE"] != nil
         let panel = FloatingControlPanel(
             contentRect: NSRect(
                 x: 0,
@@ -1813,7 +1990,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         panel.hasShadow = false
         panel.level = .floating
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
-        panel.hidesOnDeactivate = true
+        panel.hidesOnDeactivate = !isPreviewMode
         panel.contentViewController = panelController
         controlPanel = panel
     }
@@ -2046,13 +2223,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if state.isOnBreak {
             island.show(
                 mode: .breakTime,
-                detail: state.isBreakTimerPausedByMenuBar ? "倒计时已暂停。再次扫过小岛或状态栏可继续。" : "休息进行中。扫过小岛或状态栏可暂停倒计时。",
+                detail: state.isBreakTimerPausedByMenuBar ? "倒计时暂停。准备好后再继续。" : "不用着急",
                 timer: state.formatted(state.breakRemaining)
             )
         } else if state.mode == .idle {
             island.show(
                 mode: .idle,
-                detail: "暂时没有新任务。整理状态，等待下一步。"
+                detail: "暂时没有新任务。整理好状态，等下一步。"
             )
         } else {
             let apmText = state.actionEventsInLastMinute.isEmpty
@@ -2060,7 +2237,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 : String(format: "%02d", state.currentAPM)
             island.show(
                 mode: .working,
-                detail: "陪伴工作 \(state.formatted(state.workSeconds)) · APM \(apmText)"
+                detail: "稳步推进 \(state.formatted(state.workSeconds)) · APM \(apmText)"
             )
         }
     }
@@ -2075,7 +2252,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         state.mode = state.isPaused ? .idle : .working
         state.setPanelVisualMode(.alert, duration: 8)
         NSSound(named: .init("Glass"))?.play()
-        island.show(mode: .alert, detail: "休息结束，角色回到工作中。", timer: state.formatted(0), autoHideAfter: 8)
+        island.show(mode: .alert, detail: "五分钟到了。回来吧，可以去看看下一步了。", timer: state.formatted(0), autoHideAfter: 8)
         showPersistentStatus()
         panelController.refresh()
     }
@@ -2119,7 +2296,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             if !state.lastReminderMinuteKeys.contains(key) {
                 state.lastReminderMinuteKeys.insert(key)
                 state.mode = .alert
-                island.show(mode: .alert, detail: "已空闲 15 分钟。若是休息，请主动开始休息计时。", autoHideAfter: 6)
+                island.show(mode: .alert, detail: "已经空闲 15 分钟。如果是在休息，记得开启休息计时。", autoHideAfter: 6)
             }
         }
     }
@@ -2220,17 +2397,28 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         state.mode = mode
         state.setPanelVisualMode(mode, duration: duration)
 
-        if mode == .water {
-            island.show(mode: mode, detail: "\(reminder.title)。不要用意志力替代杯子。", autoHideAfter: duration)
-        } else {
-            island.show(mode: mode, detail: "\(reminder.title)。按计划校准一下。", autoHideAfter: duration)
-        }
+        island.show(mode: mode, detail: reminderDetail(for: reminder), autoHideAfter: duration)
         panelController.refresh()
+    }
+
+    private func reminderDetail(for reminder: SoftReminder) -> String {
+        switch reminder.id {
+        case "water":
+            return "喝口水。状态稳定，后面的安排才不会乱。"
+        case "move":
+            return "起来走一走。调整一下，回来会更专注。"
+        case "noon":
+            return "看一下当前进度。保留有效的，调整不合适的。"
+        case "offwork":
+            return "今天先收好尾。清楚地结束，明天才容易开始。"
+        default:
+            return "嗯？提醒时间到。"
+        }
     }
 
     private func visualMode(for reminder: SoftReminder) -> CharacterMode {
         if reminder.isLockedWater || reminder.title.contains("喝水") || reminder.title.contains("补给") {
-            return .water
+            return .reminderFirst
         }
         guard let index = state.softReminders.firstIndex(where: { $0.id == reminder.id }) else {
             return .alert
@@ -2267,7 +2455,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         state.mode = .ai
         state.setPanelVisualMode(.ai, duration: 8)
         NSSound(named: .init("Glass"))?.play()
-        island.show(mode: .ai, detail: "新增 \(added.count) 个完成标记。建议验收输出。", autoHideAfter: 8)
+        island.show(mode: .ai, detail: "新增 \(added.count) 个完成标记。确认结果后再推进。", autoHideAfter: 8)
     }
 
     private func bridgeFolders() -> [URL] {
@@ -2336,7 +2524,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         state.mode = .ai
         state.setPanelVisualMode(.ai, duration: 8)
         NSSound(named: .init("Glass"))?.play()
-        island.show(mode: .ai, detail: "Codex 新完成 \(added.count) 个回合。请验收输出。", autoHideAfter: 8)
+        island.show(mode: .ai, detail: "Codex 新完成 \(added.count) 个回合。先验收结果，再继续。", autoHideAfter: 8)
     }
 
     private func completedCodexTurns() -> Set<String> {
@@ -2412,7 +2600,7 @@ private func requestAccessibilityPermissionPrompt() -> Bool {
 }
 
 private func resetInputMonitoringPermission() {
-    let bundleID = Bundle.main.bundleIdentifier ?? "com.example.character-efficiency-island"
+    let bundleID = Bundle.main.bundleIdentifier ?? "local.codex.character-efficiency-island"
     let process = Process()
     process.executableURL = URL(fileURLWithPath: "/usr/bin/tccutil")
     process.arguments = ["reset", "ListenEvent", bundleID]

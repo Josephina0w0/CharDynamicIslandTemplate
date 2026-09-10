@@ -18,12 +18,15 @@ Sources/CharacterEfficiencyIsland/Assets/
 | `alert.png` | 普通提示和默认 AI 完成提示 |
 | `ai.png` | 可选的专用 AI 完成图片 |
 | `water.png` | 喝水提醒 |
+| `reminder-first.png` | 第一条定时提醒，通常与喝水一致 |
 | `reminder-second.png` | 第二条定时提醒 |
 | `reminder-third.png` | 第三条定时提醒 |
 | `reminder-fourth.png` | 第四条定时提醒 |
 | `statusIcon.png` | macOS 菜单栏和 App 图标来源 |
 
 推荐画布：800×800 或更大；人物四周保留约 5% 至 10% 透明空间。小岛图片会等比缩放，不要把人物贴死在画布边缘。
+
+`statusIcon.png` 不必强行做成正方形。打包脚本会把它等比放进透明正方形画布后再生成 App 图标，避免非正方形图被压扁。
 
 ## 主面板图片
 
@@ -33,6 +36,7 @@ Sources/CharacterEfficiencyIsland/Assets/
 | `panel-break.png` | 休息面板人物 |
 | `panel-idle.png` | 待命面板人物 |
 | `panel-water.png` | 喝水面板人物 |
+| `panel-ai.png` | AI 完成提醒面板人物 |
 | `panel-reminder-second.png` | 第二条提醒面板人物 |
 | `panel-reminder-third.png` | 第三条提醒面板人物 |
 | `panel-reminder-fourth.png` | 第四条提醒面板人物 |
@@ -62,11 +66,13 @@ trailing 图片右侧距离；越小越往右，负数会继续向右伸出
 | 工作 | 310 | 72 | 42 |
 | 休息 | 282 | 104 | 12 |
 | 喝水 | 238 | 128 | -32 |
+| 第一提醒 | 238 | 128 | -32 |
 | 待命 | 330 | 52 | 42 |
 | 第二提醒 | 310 | 72 | 42 |
 | 第三提醒 | 232 | 150 | 42 |
 | 第四提醒 | 310 | 64 | 42 |
-| 普通/AI 提醒 | 230 | 150 | 42 |
+| 普通提醒 | 230 | 150 | 42 |
+| AI 提醒 | 230 | 150 | 42 |
 
 不同 PNG 的透明边距差异很大，因此不要只比较图片文件尺寸。应运行 App，看人物实际可见轮廓，再微调三个参数。
 
