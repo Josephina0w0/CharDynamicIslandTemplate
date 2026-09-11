@@ -39,9 +39,12 @@ ICONSET="$DIST_DIR/AppIcon.iconset"
 swift "$ROOT_DIR/Packaging/MakeIconset.swift" "$ICON_SOURCE" "$ICONSET"
 xattr -cr "$ICONSET"
 
-iconutil -c icns "$ICONSET" -o "$RESOURCES_DIR/AppIcon.icns"
+if ! iconutil -c icns "$ICONSET" -o "$RESOURCES_DIR/AppIcon.icns"; then
+  echo "warning: AppIcon.icns could not be generated; continuing without Finder icon" >&2
+fi
 /bin/rm -rf "$ICONSET"
 
+xattr -cr "$APP_DIR"
 codesign --force --deep --sign - "$APP_DIR" >/dev/null
 
 /bin/rm -f "$DIST_DIR/$APP_NAME.zip"
