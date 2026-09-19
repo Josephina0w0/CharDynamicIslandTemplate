@@ -9,4 +9,6 @@ This repository is a clean macOS character-efficiency-island template.
 - Keep the daily and all-time record lines visible beneath the idle-time row.
 - Replace all names, Bundle IDs, storage directories, bridge directories, copy, assets, and packaging names consistently.
 - Keep transparent artwork proportional. Tune `CharacterPlacement` instead of stretching or blindly cropping images.
-- Run `./build_app.sh`, then verify both the app signature and zip integrity before reporting completion.
+- Preserve reliable status-panel behavior: both mouse-up events, `hidesOnDeactivate = false`, app activation before ordering the panel front, and one shared show helper.
+- Run `./build_app.sh`; shareable builds must contain both `arm64` and `x86_64`.
+- Run `scripts/verify_universal_app.sh` on both the app and zip before reporting completion.

@@ -1874,6 +1874,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         _ = updateAutomaticIdleState()
         showPersistentStatus()
         applyPreviewModeIfRequested()
+        showControlPanelOnceAfterUpdate()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -1899,6 +1900,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         item.button?.action = #selector(togglePopover)
         item.button?.target = self
+        item.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
+        item.button?.toolTip = "打开角色效率岛"
         statusItem = item
     }
 
@@ -1973,7 +1976,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func setupPopover() {
-        let isPreviewMode = ProcessInfo.processInfo.environment["CHARACTER_ISLAND_PREVIEW_MODE"] != nil
         let panel = FloatingControlPanel(
             contentRect: NSRect(
                 x: 0,
@@ -1990,7 +1992,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         panel.hasShadow = false
         panel.level = .floating
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
-        panel.hidesOnDeactivate = !isPreviewMode
+        // Keep the panel visible until the status item is clicked again. On
+        // newer macOS releases a borderless accessory panel can otherwise be
+        // hidden during the same activation transition that opened it.
+        panel.hidesOnDeactivate = false
         panel.contentViewController = panelController
         controlPanel = panel
     }
@@ -2151,15 +2156,31 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func togglePopover() {
-        guard let button = statusItem?.button, let panel = controlPanel else { return }
+        guard let panel = controlPanel else { return }
         if panel.isVisible {
             panel.orderOut(nil)
         } else {
-            refreshAIToolStatus()
-            panelController.refresh()
-            positionControlPanel(panel, under: button)
-            panel.makeKeyAndOrderFront(nil)
-            NSApp.activate(ignoringOtherApps: true)
+            showControlPanel()
+        }
+    }
+
+    private func showControlPanel() {
+        guard let button = statusItem?.button, let panel = controlPanel else { return }
+        refreshAIToolStatus()
+        _ = panelController.view
+        panelController.refresh()
+        positionControlPanel(panel, under: button)
+        NSApp.activate(ignoringOtherApps: true)
+        panel.orderFrontRegardless()
+        panel.makeKey()
+    }
+
+    private func showControlPanelOnceAfterUpdate() {
+        let key = "characterEfficiencyIslandControlPanelRecoveryV1"
+        guard !UserDefaults.standard.bool(forKey: key) else { return }
+        UserDefaults.standard.set(true, forKey: key)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
+            self?.showControlPanel()
         }
     }
 

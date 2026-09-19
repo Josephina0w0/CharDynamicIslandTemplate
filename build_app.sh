@@ -9,24 +9,39 @@ APP_DIR="$DIST_DIR/$APP_NAME.app"
 CONTENTS_DIR="$APP_DIR/Contents"
 MACOS_DIR="$CONTENTS_DIR/MacOS"
 RESOURCES_DIR="$CONTENTS_DIR/Resources"
+ARM64_RELEASE_DIR="$ROOT_DIR/.build/arm64-apple-macosx/release"
+X86_64_RELEASE_DIR="$ROOT_DIR/.build/x86_64-apple-macosx/release"
 RESOURCE_BUNDLE_NAME="CharacterEfficiencyIsland_CharacterEfficiencyIsland.bundle"
 
 export SWIFT_MODULE_CACHE_PATH="${SWIFT_MODULE_CACHE_PATH:-$ROOT_DIR/.build/module-cache}"
 export CLANG_MODULE_CACHE_PATH="${CLANG_MODULE_CACHE_PATH:-$ROOT_DIR/.build/clang-module-cache}"
 
+SDK_PATH="${CHARACTER_ISLAND_SDK_PATH:-}"
+if [[ -z "$SDK_PATH" ]]; then
+  if [[ -d "/Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk" ]]; then
+    SDK_PATH="/Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk"
+  else
+    SDK_PATH="$(xcrun --sdk macosx --show-sdk-path)"
+  fi
+fi
+export SDKROOT="$SDK_PATH"
+
 cd "$ROOT_DIR"
-swift build --disable-sandbox -c release --product "$EXECUTABLE_NAME"
-RELEASE_DIR="$(swift build -c release --show-bin-path)"
+swift build --disable-sandbox --sdk "$SDK_PATH" --arch arm64 -c release --product "$EXECUTABLE_NAME"
+swift build --disable-sandbox --sdk "$SDK_PATH" --arch x86_64 -c release --product "$EXECUTABLE_NAME"
 
 /bin/rm -rf "$APP_DIR"
 /bin/mkdir -p "$MACOS_DIR" "$RESOURCES_DIR"
 
 /bin/cp "$ROOT_DIR/Packaging/Info.plist" "$CONTENTS_DIR/Info.plist"
-/bin/cp "$RELEASE_DIR/$EXECUTABLE_NAME" "$MACOS_DIR/$EXECUTABLE_NAME"
+lipo -create \
+  "$ARM64_RELEASE_DIR/$EXECUTABLE_NAME" \
+  "$X86_64_RELEASE_DIR/$EXECUTABLE_NAME" \
+  -output "$MACOS_DIR/$EXECUTABLE_NAME"
 /bin/chmod +x "$MACOS_DIR/$EXECUTABLE_NAME"
 
-if [[ -d "$RELEASE_DIR/$RESOURCE_BUNDLE_NAME" ]]; then
-  /bin/cp -R "$RELEASE_DIR/$RESOURCE_BUNDLE_NAME" "$RESOURCES_DIR/"
+if [[ -d "$ARM64_RELEASE_DIR/$RESOURCE_BUNDLE_NAME" ]]; then
+  /bin/cp -R "$ARM64_RELEASE_DIR/$RESOURCE_BUNDLE_NAME" "$RESOURCES_DIR/"
 fi
 
 for image in "$ROOT_DIR"/Sources/CharacterEfficiencyIsland/Assets/*.png; do
@@ -36,12 +51,9 @@ done
 ICON_SOURCE="$ROOT_DIR/Sources/CharacterEfficiencyIsland/Assets/statusIcon.png"
 ICONSET="$DIST_DIR/AppIcon.iconset"
 
-swift "$ROOT_DIR/Packaging/MakeIconset.swift" "$ICON_SOURCE" "$ICONSET"
+swift -sdk "$SDK_PATH" -module-cache-path "$SWIFT_MODULE_CACHE_PATH" \
+  "$ROOT_DIR/Packaging/MakeIconset.swift" "$ICON_SOURCE" "$ICONSET" "$RESOURCES_DIR/AppIcon.icns"
 xattr -cr "$ICONSET"
-
-if ! iconutil -c icns "$ICONSET" -o "$RESOURCES_DIR/AppIcon.icns"; then
-  echo "warning: AppIcon.icns could not be generated; continuing without Finder icon" >&2
-fi
 /bin/rm -rf "$ICONSET"
 
 xattr -cr "$APP_DIR"

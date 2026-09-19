@@ -34,6 +34,13 @@
    dist/角色效率岛.zip
    ```
 
+   构建脚本默认生成同时兼容 Apple 芯片与 Intel Mac 的 Universal 2 应用。发布前可运行：
+
+   ```sh
+   scripts/verify_universal_app.sh dist/角色效率岛.app
+   scripts/verify_universal_app.sh dist/角色效率岛.zip
+   ```
+
 如果你是成品包使用者，不需要改代码或换图，可以直接看 [零基础安装和使用教程](docs/BEGINNER_INSTALL_AND_USE.md)。
 
 ## 运行要求
@@ -58,6 +65,7 @@ docs/AI_CUSTOMIZATION.md                            用不同 AI 工具定制
 docs/BEGINNER_INSTALL_AND_USE.md                    给成品用户看的安装和使用教程
 docs/RELEASE.md                                     构建与发布检查
 build_app.sh                                        一键构建并生成 zip
+scripts/verify_universal_app.sh                     验证双架构、签名、版本与 zip
 ```
 
 ## 只想直接让编程 AI 帮你做

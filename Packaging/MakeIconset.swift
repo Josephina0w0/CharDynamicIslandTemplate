@@ -2,12 +2,13 @@ import AppKit
 import Foundation
 
 let arguments = CommandLine.arguments
-guard arguments.count == 3 else {
-    fatalError("Usage: MakeIconset.swift <source-png> <output-iconset>")
+guard arguments.count == 3 || arguments.count == 4 else {
+    fatalError("Usage: MakeIconset.swift <source-png> <output-iconset> [output-icns]")
 }
 
 let sourcePath = arguments[1]
 let iconsetURL = URL(fileURLWithPath: arguments[2], isDirectory: true)
+let icnsURL = arguments.count == 4 ? URL(fileURLWithPath: arguments[3]) : nil
 let fileManager = FileManager.default
 
 if fileManager.fileExists(atPath: iconsetURL.path) {
@@ -32,6 +33,8 @@ let entries: [(name: String, pixels: Int)] = [
     ("icon_512x512.png", 512),
     ("icon_512x512@2x.png", 1024)
 ]
+
+var renderedPNGData = [String: Data]()
 
 for entry in entries {
     guard let canvas = NSBitmapImageRep(
@@ -74,4 +77,44 @@ for entry in entries {
         fatalError("Cannot render icon PNG")
     }
     try data.write(to: iconsetURL.appendingPathComponent(entry.name))
+    renderedPNGData[entry.name] = data
+}
+
+if let icnsURL {
+    // Modern macOS can reject an otherwise complete .iconset. ICNS supports
+    // PNG payloads directly, so assemble the standard representations here.
+    let representations: [(type: String, filename: String)] = [
+        ("icp4", "icon_16x16.png"),
+        ("icp5", "icon_32x32.png"),
+        ("icp6", "icon_32x32@2x.png"),
+        ("ic07", "icon_128x128.png"),
+        ("ic08", "icon_256x256.png"),
+        ("ic09", "icon_512x512.png"),
+        ("ic10", "icon_512x512@2x.png"),
+        ("ic11", "icon_16x16@2x.png"),
+        ("ic12", "icon_32x32@2x.png"),
+        ("ic13", "icon_128x128@2x.png"),
+        ("ic14", "icon_256x256@2x.png")
+    ]
+
+    func bigEndianUInt32(_ value: Int) -> Data {
+        var encoded = UInt32(value).bigEndian
+        return Data(bytes: &encoded, count: MemoryLayout<UInt32>.size)
+    }
+
+    var body = Data()
+    for representation in representations {
+        guard let type = representation.type.data(using: .ascii),
+              let png = renderedPNGData[representation.filename] else {
+            fatalError("Cannot assemble ICNS representation \(representation.type)")
+        }
+        body.append(type)
+        body.append(bigEndianUInt32(png.count + 8))
+        body.append(png)
+    }
+
+    var icns = Data("icns".utf8)
+    icns.append(bigEndianUInt32(body.count + 8))
+    icns.append(body)
+    try icns.write(to: icnsURL)
 }

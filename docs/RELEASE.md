@@ -13,7 +13,7 @@ dist/角色效率岛.app
 dist/角色效率岛.zip
 ```
 
-脚本会按当前 Mac 的处理器架构构建、复制资源、生成图标、进行本地临时签名并制作 zip。
+脚本会分别构建 Apple 芯片与 Intel 版本，合并为 Universal 2 应用，再复制资源、生成图标、进行本地临时签名并制作 zip。
 
 ## 发布前检查
 
@@ -23,8 +23,9 @@ dist/角色效率岛.zip
 - 工作、休息、待命、喝水、普通提醒、AI 和四条定时提醒都已看过。
 - 当日记录和累计记录可见。
 - 30 分钟自动待命与恢复工作正常。
-- `codesign --verify --deep --strict "dist/角色效率岛.app"` 通过。
-- `unzip -tq "dist/角色效率岛.zip"` 通过。
+- 菜单栏图标能打开、关闭并再次打开控制面板。
+- `scripts/verify_universal_app.sh "dist/角色效率岛.app"` 通过。
+- `scripts/verify_universal_app.sh "dist/角色效率岛.zip"` 通过。
 
 ## 分享给另一台 Mac
 
