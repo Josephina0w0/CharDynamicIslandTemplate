@@ -1729,8 +1729,7 @@ enum ImageResources {
         let urls = [
             Bundle.main.url(forResource: name, withExtension: "png"),
             appResourceURL?.appendingPathComponent("\(name).png"),
-            bundledResourceURL,
-            Bundle.module.url(forResource: name, withExtension: "png")
+            bundledResourceURL
         ]
 
         for url in urls {
