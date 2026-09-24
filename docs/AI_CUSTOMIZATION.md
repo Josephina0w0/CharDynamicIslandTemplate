@@ -12,7 +12,7 @@
 先阅读 README.md、docs/COPYWRITING.md、docs/IMAGE_SLOTS.md、docs/AI_CUSTOMIZATION.md 和 templates/character-profile.json。
 
 要求：
-1. 保留现有全部功能、30 分钟自动待命逻辑、输入隐私规则、当日与累计记录。
+1. 保留现有全部功能、30 分钟自动待命逻辑、输入隐私规则、当日与累计记录，以及自然 60 秒窗口的 APM/EPM 统计。
 2. 把角色名、App 名、状态文案、提醒文案、操作反馈、Bundle ID、存储目录和打包文件名全部替换成资料表中的值。
 3. 把我提供的 PNG 按文件语义放进 Sources/CharacterEfficiencyIsland/Assets；缺少的状态图先使用最接近的图片，不要凭空删除状态。
 4. 图片保持透明背景和原始比例。根据截图微调 characterPlacement 的 height、bottom、trailing，不裁断人物。

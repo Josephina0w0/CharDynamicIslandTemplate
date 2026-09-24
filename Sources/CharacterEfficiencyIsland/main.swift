@@ -201,7 +201,7 @@ final class AppState {
     var totalActions = 0
     var activeActionSeconds = 0
     var lastActionAt: Date?
-    var actionEventsInLastMinute = [Date]()
+    var actionEventsInLastMinute = [(time: Date, isEffective: Bool)]()
     var activeActionSecondMarks = [Date]()
     var inputMonitoringTrusted = CGPreflightListenEventAccess()
     var accessibilityTrusted = AXIsProcessTrusted()
@@ -554,10 +554,10 @@ final class AppState {
         return mode
     }
 
-    func recordActionEvent(at date: Date = Date()) {
+    func recordActionEvent(isEffective: Bool = true, at date: Date = Date()) {
         totalActions += 1
         lastActionAt = date
-        actionEventsInLastMinute.append(date)
+        actionEventsInLastMinute.append((date, isEffective))
         pruneActionWindows(now: date)
     }
 
@@ -588,7 +588,7 @@ final class AppState {
     }
 
     func pruneActionWindows(now: Date = Date()) {
-        actionEventsInLastMinute.removeAll { now.timeIntervalSince($0) > 60 }
+        actionEventsInLastMinute.removeAll { now.timeIntervalSince($0.time) > 60 }
         activeActionSecondMarks.removeAll { now.timeIntervalSince($0) > 60 }
     }
 
@@ -620,13 +620,22 @@ final class AppState {
     }
 
     var currentAPM: Int {
-        let activeSeconds = max(1, activeActionSecondMarks.count)
-        return Int((Double(actionEventsInLastMinute.count) / Double(activeSeconds) * 60).rounded())
+        actionEventsInLastMinute.count
+    }
+
+    var currentEPM: Int {
+        actionEventsInLastMinute.filter(\.isEffective).count
     }
 
     var averageAPM: Int {
-        guard activeActionSeconds > 0 else { return 0 }
-        return Int((Double(totalActions) / Double(activeActionSeconds) * 60).rounded())
+        guard workSeconds > 0 else { return 0 }
+        return Int((Double(totalActions) / Double(workSeconds) * 60).rounded())
+    }
+
+    var averageEPM: Int {
+        guard workSeconds > 0 else { return 0 }
+        let effectiveActions = max(0, totalActions - totalCorrectionKeys)
+        return Int((Double(effectiveActions) / Double(workSeconds) * 60).rounded())
     }
 }
 
@@ -1130,6 +1139,7 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
     private let typingCorrectionLabel = NSTextField(labelWithString: "修正率 0%")
     private let typingAverageLabel = NSTextField(labelWithString: "均速 0/min")
     private let apmLabel = NSTextField(labelWithString: "APM 0/min")
+    private let epmLabel = NSTextField(labelWithString: "EPM 0/min")
     private let waterCheckinLabel = NSTextField(labelWithString: "喝水 0")
     private let inputPermissionLabel = NSTextField(labelWithString: "输入权限：检查中")
     private let toolStatusLabel = NSTextField(labelWithString: "AI 工具检测准备中")
@@ -1198,7 +1208,7 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
         typingTitle.textColor = .secondaryLabelColor
         typingStack.addArrangedSubview(typingTitle)
 
-        [typingTotalLabel, typingRawSpeedLabel, typingCorrectionLabel, typingAverageLabel, apmLabel].forEach {
+        [typingTotalLabel, typingRawSpeedLabel, typingCorrectionLabel, typingAverageLabel, apmLabel, epmLabel].forEach {
             $0.font = .monospacedDigitSystemFont(ofSize: 12, weight: .semibold)
             $0.textColor = .labelColor
             $0.lineBreakMode = .byTruncatingTail
@@ -1348,6 +1358,7 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
         typingCorrectionLabel.stringValue = "修正率 \(state.typingCorrectionRate)%"
         typingAverageLabel.stringValue = "均速 \(state.averageEffectiveSpeed)/min"
         apmLabel.stringValue = "APM \(state.currentAPM)/min"
+        epmLabel.stringValue = "EPM \(state.currentEPM)/min"
         let totalRecord = state.totalRecord
         todayRecordLabel.stringValue = "今天 工作 \(state.formatted(state.workSeconds)) · 休息 \(state.formatted(state.breakSeconds)) · 水 \(state.waterCheckins) · AI \(state.aiDoneCount)"
         totalRecordLabel.stringValue = "累计 \(state.activeRecordDays) 天 · 工作 \(state.formatted(totalRecord.workSeconds)) · 字 \(totalRecord.printableKeys) · 水 \(totalRecord.waterCheckins) · AI \(totalRecord.aiDoneCount)"
@@ -2083,38 +2094,40 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func recordTypingIfNeeded(_ event: NSEvent) {
         guard event.type == .keyDown, !event.isARepeat else { return }
-        guard !event.modifierFlags.contains(.command),
-              !event.modifierFlags.contains(.control),
-              !event.modifierFlags.contains(.option) else {
-            return
-        }
-
-        if isCorrectionKey(event.keyCode) {
-            recordTypingKey(keyCode: event.keyCode, isCorrection: true)
-            return
-        }
-
-        guard isPrintableTypingKey(event) else { return }
-        recordTypingKey(keyCode: event.keyCode, isCorrection: false)
+        let isCorrection = isCorrectionKey(event.keyCode)
+        let hasShortcutModifier = event.modifierFlags.contains(.command)
+            || event.modifierFlags.contains(.control)
+            || event.modifierFlags.contains(.option)
+        let countsAsTyping = isCorrection || (!hasShortcutModifier && isPrintableTypingKey(event))
+        recordTypingKey(
+            keyCode: event.keyCode,
+            isCorrection: isCorrection,
+            countsAsTyping: countsAsTyping
+        )
     }
 
     func recordTypingKeyFromEventTap(keyCode: UInt16, flags: CGEventFlags, isRepeat: Bool) {
         guard !isRepeat else { return }
-        guard !flags.contains(.maskCommand),
-              !flags.contains(.maskControl),
-              !flags.contains(.maskAlternate) else {
-            return
-        }
-        guard isCorrectionKey(keyCode) || isPrintableTypingKeyCode(keyCode) else { return }
+        let isCorrection = isCorrectionKey(keyCode)
+        let hasShortcutModifier = flags.contains(.maskCommand)
+            || flags.contains(.maskControl)
+            || flags.contains(.maskAlternate)
+        let countsAsTyping = isCorrection || (!hasShortcutModifier && isPrintableTypingKeyCode(keyCode))
         state.lastExplicitInputAt = Date()
-        recordTypingKey(keyCode: keyCode, isCorrection: isCorrectionKey(keyCode))
+        recordTypingKey(
+            keyCode: keyCode,
+            isCorrection: isCorrection,
+            countsAsTyping: countsAsTyping
+        )
     }
 
-    private func recordTypingKey(keyCode: UInt16, isCorrection: Bool) {
+    private func recordTypingKey(keyCode: UInt16, isCorrection: Bool, countsAsTyping: Bool) {
         let now = Date()
         guard state.shouldAcceptTypingKey(keyCode, at: now) else { return }
-        state.recordActionEvent(at: now)
-        state.recordTypingEvent(isCorrection: isCorrection, at: now)
+        state.recordActionEvent(isEffective: !isCorrection, at: now)
+        if countsAsTyping {
+            state.recordTypingEvent(isCorrection: isCorrection, at: now)
+        }
     }
 
     private func recordPointerActionIfNeeded(_ event: NSEvent) {
@@ -2252,12 +2265,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 detail: "暂时没有新任务。整理好状态，等下一步。"
             )
         } else {
-            let apmText = state.actionEventsInLastMinute.isEmpty
+            let epmText = state.actionEventsInLastMinute.isEmpty
                 ? "--"
-                : String(format: "%02d", state.currentAPM)
+                : String(format: "%02d", state.currentEPM)
             island.show(
                 mode: .working,
-                detail: "稳步推进 \(state.formatted(state.workSeconds)) · APM \(apmText)"
+                detail: "稳步推进 \(state.formatted(state.workSeconds)) · EPM \(epmText)"
             )
         }
     }

@@ -86,6 +86,10 @@ public struct IslandDailyRecord: Identifiable, Codable, Equatable, Sendable {
         max(0, printableKeys - correctionKeys)
     }
 
+    public var effectiveActionCount: Int {
+        max(0, actionCount - correctionKeys)
+    }
+
     public var hasActivity: Bool {
         workSeconds > 0
             || breakSeconds > 0
@@ -164,6 +168,10 @@ public struct TypingStats: Codable, Equatable, Sendable {
         max(0, printableKeys - correctionKeys)
     }
 
+    public var effectiveActionCount: Int {
+        max(0, actionCount - correctionKeys)
+    }
+
     public var correctionRate: Int {
         guard printableKeys > 0 else { return 0 }
         return Int((Double(correctionKeys) / Double(printableKeys) * 100).rounded())
@@ -174,9 +182,20 @@ public struct TypingStats: Codable, Equatable, Sendable {
         return Int((Double(effectiveKeys) / Double(activeTypingSeconds) * 60).rounded())
     }
 
+    @available(*, deprecated, message: "Use averageAPM(elapsedSeconds:) for the natural-time esports calculation.")
     public var averageAPM: Int {
         guard activeActionSeconds > 0 else { return 0 }
         return Int((Double(actionCount) / Double(activeActionSeconds) * 60).rounded())
+    }
+
+    public func averageAPM(elapsedSeconds: Int) -> Int {
+        guard elapsedSeconds > 0 else { return 0 }
+        return Int((Double(actionCount) / Double(elapsedSeconds) * 60).rounded())
+    }
+
+    public func averageEPM(elapsedSeconds: Int) -> Int {
+        guard elapsedSeconds > 0 else { return 0 }
+        return Int((Double(effectiveActionCount) / Double(elapsedSeconds) * 60).rounded())
     }
 }
 
