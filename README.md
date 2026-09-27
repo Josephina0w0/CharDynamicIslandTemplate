@@ -81,7 +81,20 @@ docs/BEGINNER_INSTALL_AND_USE.md                    给成品用户看的安装�
 docs/RELEASE.md                                     构建与发布检查
 build_app.sh                                        一键构建并生成 zip
 scripts/verify_universal_app.sh                     验证双架构、签名、版本与 zip
+companion-pack/skills/character-companion-builder
+variants/character-companion-general
 ```
+
+## Character Companion 通用版
+
+`companion` 分支新增了角色无关版本：桌宠工作计时与 EPM、人物点击/拖动/缩放、设置面板、通用 Tracker、只读 iCloud 日历都在同一个原生 macOS App 中。运行时名称集中在 `CompanionProfile.swift`，状态图片使用固定语义槽位；仓库继续使用可再分发的蓝色占位素材，不绑定任何具体角色。
+
+```sh
+cd variants/character-companion-general
+./build_app.sh
+```
+
+创建新角色或新的 Tracker 领域时，先阅读 `companion-pack/skills/character-companion-builder/SKILL.md`，再按其中的 Workflow 与 QA 清单操作。
 
 ## 只想直接让编程 AI 帮你做
 
