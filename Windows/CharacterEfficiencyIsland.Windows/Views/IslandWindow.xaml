@@ -6,57 +6,96 @@
         ResizeMode="NoResize"
         AllowsTransparency="True"
         Background="Transparent"
+        FontFamily="Microsoft YaHei UI"
         ShowInTaskbar="False"
         ShowActivated="False"
         Topmost="True">
-  <Grid>
-    <Border x:Name="IslandBody"
-            CornerRadius="38"
-            Background="#E81F1F21"
-            BorderBrush="#44FFFFFF"
-            BorderThickness="1"
+  <Viewbox x:Name="IslandScaleHost"
+           Stretch="Uniform"
+           StretchDirection="Both">
+    <Grid x:Name="IslandRoot">
+      <Border x:Name="IslandBody"
+            CornerRadius="22"
+            Background="#D0929292"
+            BorderBrush="Transparent"
+            BorderThickness="0"
             MouseLeftButtonDown="IslandBody_OnMouseLeftButtonDown"
             MouseEnter="IslandBody_OnMouseEnter"
             MouseLeave="IslandBody_OnMouseLeave">
       <Grid>
-        <Grid x:Name="HorizontalLayout" Margin="16,9,18,9">
+        <Grid x:Name="HorizontalLayout" Margin="14,6,8,6">
           <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="138" />
+            <ColumnDefinition Width="34" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="62" />
           </Grid.ColumnDefinitions>
-          <Image x:Name="HorizontalImage" Grid.Column="0" Stretch="Uniform" Margin="0,-8,8,-8" />
-          <StackPanel Grid.Column="1" VerticalAlignment="Center">
-            <TextBlock x:Name="HorizontalTitle" Foreground="White" FontSize="25" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
-            <TextBlock x:Name="HorizontalTimer" Foreground="White" FontSize="30" FontWeight="Bold" FontFamily="Consolas" Margin="0,4,0,0" />
-            <TextBlock x:Name="HorizontalDetail" Foreground="#E6FFFFFF" FontSize="14" FontWeight="SemiBold" Margin="0,5,0,0" TextWrapping="Wrap" MaxHeight="42" />
+          <Viewbox Grid.Column="0" Width="23" Height="23" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <Canvas Width="28" Height="28">
+              <Ellipse Canvas.Left="3" Canvas.Top="4" Width="22" Height="22" Stroke="#FFFF3B43" StrokeThickness="3" />
+              <Line X1="14" Y1="1" X2="14" Y2="7" Stroke="#FFFF3B43" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+              <Line X1="14" Y1="15" X2="9" Y2="10" Stroke="#FFFF3B43" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+            </Canvas>
+          </Viewbox>
+          <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,4,0">
+            <TextBlock x:Name="HorizontalTitle" Foreground="White" FontSize="16.5" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
+            <TextBlock x:Name="HorizontalDetail" Foreground="#DFFFFFFF" FontSize="11.5" FontWeight="SemiBold" Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
           </StackPanel>
+          <Image x:Name="HorizontalImage" Grid.Column="2" Stretch="Uniform" Margin="3,-4,0,-4" HorizontalAlignment="Center" VerticalAlignment="Center" />
         </Grid>
 
-        <Grid x:Name="VerticalLayout" Visibility="Collapsed" Margin="10,14,10,10">
+        <Grid x:Name="VerticalLayout" Visibility="Collapsed" Margin="8,12,8,8">
           <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="150" />
+            <RowDefinition Height="104" />
           </Grid.RowDefinitions>
-          <StackPanel Grid.Row="0" HorizontalAlignment="Center">
-            <TextBlock x:Name="VerticalTitle" Foreground="White" FontSize="19" FontWeight="Bold" TextAlignment="Center" LineHeight="21" />
-            <TextBlock x:Name="VerticalDetail" Foreground="#E6FFFFFF" FontSize="13" TextAlignment="Center" TextWrapping="Wrap" Width="118" Margin="0,9,0,0" />
+          <TextBlock x:Name="VerticalTitle"
+                     Grid.Row="0"
+                     Foreground="White"
+                     FontSize="14"
+                     FontWeight="Bold"
+                     TextAlignment="Center"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     LineHeight="16" />
+          <StackPanel Grid.Row="1"
+                      Width="88"
+                      HorizontalAlignment="Center"
+                      Margin="0,5,0,8">
+            <TextBlock x:Name="VerticalTimeLabel"
+                       Text="工作时间"
+                       Foreground="#DFFFFFFF"
+                       FontSize="10.5"
+                       FontWeight="SemiBold"
+                       TextAlignment="Center" />
+            <TextBlock x:Name="VerticalTimer"
+                       Foreground="White"
+                       FontSize="14"
+                       FontWeight="Bold"
+                       FontFamily="Consolas"
+                       TextAlignment="Center"
+                       Margin="0,1" />
+            <TextBlock x:Name="VerticalEpm"
+                       Foreground="#DFFFFFFF"
+                       FontSize="10.5"
+                       FontWeight="SemiBold"
+                       TextAlignment="Center" />
           </StackPanel>
-          <TextBlock x:Name="VerticalTimer" Grid.Row="1" Foreground="White" FontSize="21" FontWeight="Bold" FontFamily="Consolas" HorizontalAlignment="Center" Margin="0,5" />
           <Image x:Name="VerticalImage" Grid.Row="2" Stretch="Uniform" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
         </Grid>
       </Grid>
-    </Border>
+      </Border>
 
-    <primitives:Thumb x:Name="ResizeThumb"
-                      Width="22"
-                      Height="22"
+      <primitives:Thumb x:Name="ResizeThumb"
+                      Width="15"
+                      Height="15"
                       HorizontalAlignment="Right"
                       VerticalAlignment="Bottom"
                       Cursor="SizeNWSE"
                       Opacity="0.01"
                       DragStarted="ResizeThumb_OnDragStarted"
                       DragDelta="ResizeThumb_OnDragDelta"
-                      DragCompleted="ResizeThumb_OnDragCompleted" />
-  </Grid>
+                        DragCompleted="ResizeThumb_OnDragCompleted" />
+    </Grid>
+  </Viewbox>
 </Window>

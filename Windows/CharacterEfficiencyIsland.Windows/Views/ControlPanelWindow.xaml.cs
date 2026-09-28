@@ -28,7 +28,10 @@ public partial class ControlPanelWindow : Window
         _surface = surface;
         _quit = quit;
         InitializeComponent();
-        WindowTitle.Text = state.Profile.AppName;
+        SourceInitialized += (_, _) => WindowMaterial.ApplyAcrylic(
+            this,
+            unchecked((int)0x22505050),
+            () => 24);
         BuildReminderRows();
         Closing += (_, args) =>
         {
@@ -77,7 +80,7 @@ public partial class ControlPanelWindow : Window
             ModeSubtitle.Text = _state.DisplayDetail;
             WorkLabel.Text = $"工作 {_state.FormatSeconds(_state.WorkSeconds)}";
             BreakLabel.Text = $"休息 {_state.FormatSeconds(_state.BreakSeconds)}";
-            AiLabel.Text = $"AI {_state.AiDoneCount}";
+            AiLabel.Text = $"AI 完成 {_state.AiDoneCount}";
             IdleLabel.Text = $"当前状态：{(_state.IsPaused ? "已暂停" : _state.Profile.Title(_state.Mode))}";
             TodayLabel.Text = $"今天 工作 {_state.FormatSeconds(_state.WorkSeconds)} · 休息 {_state.FormatSeconds(_state.BreakSeconds)} · 水 {_state.WaterCheckins} · AI {_state.AiDoneCount}";
             var total = _state.TotalRecord;
@@ -91,7 +94,7 @@ public partial class ControlPanelWindow : Window
             EpmLabel.Text = $"EPM {_state.CurrentEpm}/min";
             InputStatusLabel.Text = _state.InputStatus;
             CodexStatusLabel.Text = _state.CodexStatus;
-            ScaleLabel.Text = $"角色大小 {Math.Round(_state.Settings.SurfaceScale * 100):0}%";
+            ScaleLabel.Text = $"灵动岛大小 {Math.Round(_state.Settings.SurfaceScale * 100):0}%";
 
             AiReminderCheck.IsChecked = _state.Settings.AiRemindersEnabled;
             SurfaceCheck.IsChecked = _state.Settings.ShowPersistentSurface;
@@ -135,10 +138,10 @@ public partial class ControlPanelWindow : Window
     {
         foreach (var reminder in _state.Reminders)
         {
-            var row = new Grid { Margin = new Thickness(0, 2, 0, 2) };
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(28) });
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(210) });
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(150) });
+            var row = new Grid { Margin = new Thickness(0, 1, 0, 1) };
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(24) });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(105) });
 
             var enabled = new System.Windows.Controls.CheckBox
             {

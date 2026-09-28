@@ -24,8 +24,9 @@ internal static class AssetLoader
         image.CacheOption = BitmapCacheOption.OnLoad;
         image.EndInit();
         image.Freeze();
-        Cache[assetName] = image;
-        return image;
+        var prepared = RemoveConnectedNearWhiteBackground(image);
+        Cache[assetName] = prepared;
+        return prepared;
     }
 
     public static Drawing.Icon TrayIcon()
@@ -77,6 +78,78 @@ internal static class AssetLoader
         CharacterMode.Alert => "panel-ai",
         _ => "panel-working"
     };
+
+    private static ImageSource RemoveConnectedNearWhiteBackground(BitmapSource source)
+    {
+        var formatted = new FormatConvertedBitmap(source, PixelFormats.Bgra32, null, 0);
+        var width = formatted.PixelWidth;
+        var height = formatted.PixelHeight;
+        var stride = width * 4;
+        var pixels = new byte[stride * height];
+        formatted.CopyPixels(pixels, stride, 0);
+
+        bool IsNearWhite(int pixelIndex)
+        {
+            var offset = pixelIndex * 4;
+            var blue = pixels[offset];
+            var green = pixels[offset + 1];
+            var red = pixels[offset + 2];
+            var alpha = pixels[offset + 3];
+            return alpha >= 245 && red >= 236 && green >= 236 && blue >= 236 &&
+                Math.Max(red, Math.Max(green, blue)) - Math.Min(red, Math.Min(green, blue)) <= 12;
+        }
+
+        if (!IsNearWhite(0) && !IsNearWhite(width - 1) &&
+            !IsNearWhite((height - 1) * width) && !IsNearWhite(width * height - 1))
+        {
+            return source;
+        }
+
+        var visited = new bool[width * height];
+        var queue = new Queue<int>();
+        void EnqueueIfBackground(int index)
+        {
+            if (!visited[index] && IsNearWhite(index))
+            {
+                visited[index] = true;
+                queue.Enqueue(index);
+            }
+        }
+
+        for (var x = 0; x < width; x++)
+        {
+            EnqueueIfBackground(x);
+            EnqueueIfBackground((height - 1) * width + x);
+        }
+        for (var y = 0; y < height; y++)
+        {
+            EnqueueIfBackground(y * width);
+            EnqueueIfBackground(y * width + width - 1);
+        }
+
+        while (queue.TryDequeue(out var index))
+        {
+            pixels[index * 4 + 3] = 0;
+            var x = index % width;
+            var y = index / width;
+            if (x > 0) EnqueueIfBackground(index - 1);
+            if (x + 1 < width) EnqueueIfBackground(index + 1);
+            if (y > 0) EnqueueIfBackground(index - width);
+            if (y + 1 < height) EnqueueIfBackground(index + width);
+        }
+
+        var result = BitmapSource.Create(
+            width,
+            height,
+            formatted.DpiX,
+            formatted.DpiY,
+            PixelFormats.Bgra32,
+            null,
+            pixels,
+            stride);
+        result.Freeze();
+        return result;
+    }
 
     [DllImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
