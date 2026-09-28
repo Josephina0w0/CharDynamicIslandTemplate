@@ -8,7 +8,7 @@ using Forms = System.Windows.Forms;
 
 namespace CharacterEfficiencyIsland.Windows.Views;
 
-internal partial class CompanionWindow : Window, ICharacterSurface
+public partial class CompanionWindow : Window, ICharacterSurface
 {
     private const double BaseWidth = 280;
     private const double BaseHeight = 390;

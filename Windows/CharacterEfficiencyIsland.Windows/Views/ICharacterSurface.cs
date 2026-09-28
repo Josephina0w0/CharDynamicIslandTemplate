@@ -2,7 +2,7 @@ using CharacterEfficiencyIsland.Windows.Core;
 
 namespace CharacterEfficiencyIsland.Windows.Views;
 
-internal interface ICharacterSurface
+public interface ICharacterSurface
 {
     void Refresh(AppState state);
     void ShowSurface();

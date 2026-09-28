@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace CharacterEfficiencyIsland.Windows.Core;
 
-internal sealed class AppState
+public sealed class AppState
 {
     private readonly LocalStore _store;
     private readonly Queue<(DateTimeOffset Time, bool Correction)> _typingWindow = new();
@@ -19,7 +19,7 @@ internal sealed class AppState
     private DateTimeOffset? _visualModeExpiresAt;
     private string? _visualDetail;
 
-    public AppState(AppProfile profile, LocalStore store)
+    internal AppState(AppProfile profile, LocalStore store)
     {
         Profile = profile;
         _store = store;

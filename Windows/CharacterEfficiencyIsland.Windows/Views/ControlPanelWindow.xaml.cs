@@ -8,9 +8,12 @@ using Forms = System.Windows.Forms;
 
 namespace CharacterEfficiencyIsland.Windows.Views;
 
-internal partial class ControlPanelWindow : Window
+public partial class ControlPanelWindow : Window
 {
-    private sealed record ReminderControls(CheckBox Enabled, TextBox Title, TextBox Schedule);
+    private sealed record ReminderControls(
+        System.Windows.Controls.CheckBox Enabled,
+        System.Windows.Controls.TextBox Title,
+        System.Windows.Controls.TextBox Schedule);
 
     private readonly AppState _state;
     private readonly ICharacterSurface _surface;
@@ -137,9 +140,17 @@ internal partial class ControlPanelWindow : Window
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(210) });
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(150) });
 
-            var enabled = new CheckBox { IsChecked = reminder.Enabled, VerticalAlignment = VerticalAlignment.Center };
-            var title = new TextBox { Text = reminder.Title, IsReadOnly = reminder.Id == "water" };
-            var schedule = new TextBox { Text = reminder.Schedule };
+            var enabled = new System.Windows.Controls.CheckBox
+            {
+                IsChecked = reminder.Enabled,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            var title = new System.Windows.Controls.TextBox
+            {
+                Text = reminder.Title,
+                IsReadOnly = reminder.Id == "water"
+            };
+            var schedule = new System.Windows.Controls.TextBox { Text = reminder.Schedule };
             Grid.SetColumn(enabled, 0);
             Grid.SetColumn(title, 1);
             Grid.SetColumn(schedule, 2);

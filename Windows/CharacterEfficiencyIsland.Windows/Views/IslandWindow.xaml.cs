@@ -9,7 +9,7 @@ using Forms = System.Windows.Forms;
 
 namespace CharacterEfficiencyIsland.Windows.Views;
 
-internal partial class IslandWindow : Window, ICharacterSurface
+public partial class IslandWindow : Window, ICharacterSurface
 {
     private const double HorizontalWidth = 620;
     private const double HorizontalHeight = 160;
@@ -109,7 +109,7 @@ internal partial class IslandWindow : Window, ICharacterSurface
         }
     }
 
-    private void IslandBody_OnMouseEnter(object sender, MouseEventArgs e)
+    private void IslandBody_OnMouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
     {
         if (!_state.IsOnBreak)
         {
@@ -117,7 +117,7 @@ internal partial class IslandWindow : Window, ICharacterSurface
         }
     }
 
-    private void IslandBody_OnMouseLeave(object sender, MouseEventArgs e) => Opacity = 1.0;
+    private void IslandBody_OnMouseLeave(object sender, System.Windows.Input.MouseEventArgs e) => Opacity = 1.0;
 
     private void ResizeThumb_OnDragStarted(object sender, DragStartedEventArgs e)
     {
