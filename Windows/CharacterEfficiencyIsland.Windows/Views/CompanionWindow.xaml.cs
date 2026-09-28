@@ -122,7 +122,7 @@ public partial class CompanionWindow : Window, ICharacterSurface
 
     private void ClampAndSavePosition()
     {
-        var topLeft = PointToScreen(new Point(0, 0));
+        var topLeft = PointToScreen(new System.Windows.Point(0, 0));
         var point = new Drawing.Point((int)topLeft.X, (int)topLeft.Y);
         var screen = ScreenGeometry.FromPoint(point);
         var area = screen.WorkingArea;
