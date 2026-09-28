@@ -13,3 +13,15 @@ This repository is a clean macOS character-efficiency-island template.
 - Preserve reliable status-panel behavior: both mouse-up events, `hidesOnDeactivate = false`, app activation before ordering the panel front, and one shared show helper.
 - Run `./build_app.sh`; shareable builds must contain both `arm64` and `x86_64`.
 - Run `scripts/verify_universal_app.sh` on both the app and zip before reporting completion.
+
+## Windows branch invariants
+
+- Keep the Windows client in `Windows/CharacterEfficiencyIsland.Windows`; do not replace the macOS target.
+- `main` uses the `dynamic-island` build flavor. The `companion` branch changes only the default shell to `companion`; both flavors share input, state, reminder, record, Codex, tray, and panel code.
+- Windows APM/EPM uses background Raw Input, counts non-repeating key-down actions and mouse clicks over a natural rolling 60-second window, and excludes Backspace/Delete from EPM.
+- Never persist actual key values, produced characters, clipboard text, window titles, or typed content.
+- The dynamic island must always redock after dragging: top is locked to the screen work-area center; left/right remain edge-attached with adjustable vertical position. Side artwork stays upright at the bottom of the island.
+- The Windows control panel opens against the inside edge of whichever taskbar contains the clicked tray icon.
+- Do not add sleep-prevention code or controls to the Windows client.
+- Windows AI completion detection supports Codex only until the user explicitly expands scope.
+- Build on Windows with `Windows/build_windows.ps1`, verify with `Windows/verify_windows_package.ps1`, and test the packaged EXE on a real Windows 11 device.

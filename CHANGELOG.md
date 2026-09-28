@@ -2,6 +2,30 @@
 
 本项目按语义版本记录通用模板的功能、修复与迁移注意事项。版本号同时写入 `Packaging/Info.plist`。
 
+## Windows 0.1.4-win.1 Beta — 开发中
+
+### 新增
+
+- 新增 Windows 11 WPF 通用客户端，复用 0.1.4 的图片、提醒、30 分钟自动待命、本地记录及自然时间 APM/EPM 口径。
+- 新增顶部、左侧、右侧吸附灵动岛：顶部锁定所在屏幕工作区中央；侧边保持贴边并可纵向调整，人物保持正向并固定在侧边小岛底部。
+- 新增供 `companion` 分支使用的共享桌宠窗口。
+- 新增 Windows 通知区域图标，以及贴着被点击任务栏内侧展开的控制面板。
+- 新增 Raw Input 汇总统计、真实 Windows 登录启动项和只读 Codex 完成检测；不保存输入内容。
+- 新增 Windows x64 自包含 EXE/ZIP 构建、校验、GitHub Actions、安装说明和真机测试矩阵。
+- 修复 macOS 0.1.4 模板中“登录时启动”开关只改变界面状态、未实际注册系统登录项的问题。
+
+### Windows 差异
+
+- Windows 记录保存在 `%LOCALAPPDATA%`，不导入 macOS 记录。
+- Windows AI 完成提醒第一阶段只支持 Codex。
+- Windows 版不包含防休眠功能或相关选项。
+
+### 注意事项
+
+- Windows Beta 包暂未签名，可能出现 SmartScreen 提示。
+- Windows 可能把新托盘图标放进隐藏区，是否固定显示由用户决定。
+- Raw Input、混合 DPI、多显示器、任务栏位置和 Codex 数据库兼容性必须在 Windows 11 真机测试。
+
 ## 0.1.4 — 2026-09-24
 
 ### 新增

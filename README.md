@@ -1,10 +1,12 @@
 # 赛博谷灵动岛｜纯净通用模板
 
-一个原生 macOS 菜单栏效率工具模板。你可以把角色名、说话风格和透明 PNG 换成任何原创人物、虚拟角色或获得授权的人物素材，做成自己的“OC/角色灵动岛”。
+一个角色效率工具模板。稳定版为原生 macOS 菜单栏灵动岛；仓库同时开始提供 Windows 11 通用版，支持顶部/侧边吸附灵动岛和桌宠两种外壳。你可以把角色名、说话风格和透明 PNG 换成任何原创人物、虚拟角色或获得授权的人物素材。
 
 仓库内不包含任何具体角色素材，也不包含任何用户记录。首次运行会使用蓝色占位人物图。
 
 当前版本：**0.1.4**。版本改动、兼容性和升级注意事项见 [CHANGELOG.md](CHANGELOG.md)。
+
+Windows 版当前为 **0.1.4-win.1 Beta**：`main` 分支构建吸附灵动岛，`companion` 分支构建桌宠。安装、操作、隐私、已知限制和测试清单见 [Windows 11 通用版说明](docs/WINDOWS.md)。
 
 ## 它能做什么
 
@@ -15,6 +17,8 @@
 - 五分钟休息倒计时、暂停/继续、工作时防止系统休眠。
 - 读取 Codex 完成元数据，也支持 Claude、Cursor、Terminal 和其他工具通过本地标记文件桥接。
 - 数据只保存在本机；键盘统计只记录数量和类别，不保存输入内容。
+
+> Windows 版按用户选择不提供防休眠功能，AI 完成提醒第一阶段只支持 Codex；macOS 0.1.4 的既有功能保持不变。
 
 ### 0.1.4 新增与改动
 
@@ -81,6 +85,9 @@ docs/BEGINNER_INSTALL_AND_USE.md                    给成品用户看的安装�
 docs/RELEASE.md                                     构建与发布检查
 build_app.sh                                        一键构建并生成 zip
 scripts/verify_universal_app.sh                     验证双架构、签名、版本与 zip
+Windows/CharacterEfficiencyIsland.Windows/          Windows 11 WPF 通用工程
+Windows/build_windows.ps1                           Windows EXE/ZIP 构建脚本
+docs/WINDOWS.md                                     Windows 安装、功能和测试说明
 ```
 
 ## 只想直接让编程 AI 帮你做
