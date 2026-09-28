@@ -1,4 +1,39 @@
-# 赛博谷灵动岛｜纯净通用模板
+# 赛博谷 Character Companion｜`companion` 分支
+
+> [!IMPORTANT]
+> 当前是 `companion` 开发分支，不是仓库默认的 `main` 分支。本分支在原有角色效率岛模板之外，增加了一个角色无关的「桌宠 + 效率计时 + Tracker」原生 macOS App；不会覆盖 `main` 中的顶部灵动岛模板。
+
+## 分支说明
+
+`companion` 面向需要桌面陪伴形态、工作状态反馈和项目追踪的人。角色默认出现在屏幕右下角，人物与工作信息框分离：人物可以拖动和独立缩放，工作时间与 EPM 信息框保持固定尺寸。点击人物可以开关控制面板，点击面板之外会自动收起。
+
+| 对比项 | `main` | `companion` |
+| --- | --- | --- |
+| 主要形态 | 顶部角色效率岛模板 | 右下角桌宠 + Tracker |
+| 角色绑定 | 无具体角色 | 无具体角色，可配置任意角色 |
+| 效率功能 | 工作、休息、提醒、APM/EPM | 保留效率功能，并增加桌宠交互 |
+| Tracker | 无 | 日历、Daily Top 3、项目阶段、截止与跟进 |
+| 开发资料 | 灵动岛定制文档 | 额外提供 Companion Skill、Workflow、Roadmap 与 QA |
+
+本分支包含：
+
+- [Character Companion 通用源码](variants/character-companion-general/)：可直接构建的角色无关基线，使用蓝色占位素材，不包含私人数据。
+- [Companion 通用开发包](companion-pack/)：角色 Profile、架构、图片归一化、测试与发布工具。
+- [Character Companion Builder Skill](companion-pack/skills/character-companion-builder/SKILL.md)：制作新角色或新 Tracker 领域时的统一工作流。
+- [产品 Roadmap](companion-pack/skills/character-companion-builder/references/roadmap.md) 与 [完整 Workflow](companion-pack/skills/character-companion-builder/references/workflow.md)。
+
+通用版保持输入隐私，只统计按键与鼠标操作的数量和类别，不保存具体输入内容；iCloud 日历访问默认为只读。发行构建为 Universal 2，同时支持 Apple 芯片与 Intel Mac。
+
+快速构建 Companion：
+
+```sh
+cd variants/character-companion-general
+./build_app.sh
+```
+
+输出位于 `variants/character-companion-general/dist/`。
+
+## 原始灵动岛模板基线
 
 一个角色效率工具模板。稳定版为原生 macOS 菜单栏灵动岛；仓库同时开始提供 Windows 11 通用版，支持顶部/侧边吸附灵动岛和桌宠两种外壳。你可以把角色名、说话风格和透明 PNG 换成任何原创人物、虚拟角色或获得授权的人物素材。
 
@@ -88,6 +123,8 @@ scripts/verify_universal_app.sh                     验证双架构、签名、�
 Windows/CharacterEfficiencyIsland.Windows/          Windows 11 WPF 通用工程
 Windows/build_windows.ps1                           Windows EXE/ZIP 构建脚本
 docs/WINDOWS.md                                     Windows 安装、功能和测试说明
+companion-pack/skills/character-companion-builder/  Companion 定制 Skill 与开发资料
+variants/character-companion-general/               macOS 通用桌宠与 Tracker 工程
 ```
 
 ## 只想直接让编程 AI 帮你做
