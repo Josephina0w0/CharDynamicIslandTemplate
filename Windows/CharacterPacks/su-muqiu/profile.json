@@ -1,0 +1,48 @@
+{
+  "appName": "苏沐秋效率岛",
+  "characterName": "苏沐秋",
+  "storageId": "SuMuqiuEfficiencyIsland.Windows",
+  "mutexId": "com.josephina.su-muqiu-efficiency-island.windows",
+  "titles": {
+    "working": "苏沐秋工作中", "breakTime": "休息倒计时", "idle": "苏沐秋待命中",
+    "alert": "苏沐秋提醒", "ai": "Codex 任务完成", "water": "喝水时间",
+    "reminderFirst": "喝水时间", "reminderSecond": "苏沐秋提醒",
+    "reminderThird": "苏沐秋提醒", "reminderFourth": "苏沐秋提醒"
+  },
+  "details": {
+    "working": "想法有了，接下来把它做出来。",
+    "breakTime": "休息五分钟。脑子放松一下，点子才跑得更快。",
+    "idle": "暂时停机。等你回来，我们继续把想法做出来。",
+    "alert": "时间到了。别让小问题拖成大问题。",
+    "ai": "新结果出炉。检查一下，看看还能怎么优化。",
+    "water": "补点水。设备要维护，人也一样。",
+    "reminderFirst": "补充水分。长期稳定，比临时硬撑更重要。",
+    "reminderSecond": "起来走两步。换个角度，说不定思路也通了。",
+    "reminderThird": "中场检查。看看进度，也看看有没有更好的做法。",
+    "reminderFourth": "到收尾时间了。保存成果，顺便给明天留个起点。"
+  },
+  "reminders": [
+    { "id": "water", "title": "喝水", "schedule": "每 2 小时", "enabled": true },
+    { "id": "move", "title": "活动一下", "schedule": "每 1 小时", "enabled": true },
+    { "id": "noon", "title": "午间检修", "schedule": "11:00", "enabled": true },
+    { "id": "offwork", "title": "今日收尾", "schedule": "16:30", "enabled": true }
+  ],
+  "islandAssets": {
+    "working": "working", "breakTime": "working", "idle": "working", "alert": "working", "ai": "working",
+    "water": "working", "reminderFirst": "working", "reminderSecond": "working",
+    "reminderThird": "working", "reminderFourth": "working"
+  },
+  "panelAssets": { "alert": "panel-working", "ai": "panel-working" },
+  "panelPlacements": {
+    "working": { "height": 310, "bottom": 150, "right": -63 },
+    "breakTime": { "height": 310, "bottom": 150, "right": -63 },
+    "water": { "height": 268, "bottom": 149, "right": 0 },
+    "reminderFirst": { "height": 268, "bottom": 149, "right": 0 },
+    "idle": { "height": 310, "bottom": 150, "right": -63 },
+    "reminderSecond": { "height": 310, "bottom": 150, "right": -59 },
+    "reminderThird": { "height": 310, "bottom": 150, "right": 0 },
+    "reminderFourth": { "height": 358, "bottom": 178, "right": -94 },
+    "alert": { "height": 310, "bottom": 150, "right": -63 },
+    "ai": { "height": 310, "bottom": 150, "right": -63 }
+  }
+}

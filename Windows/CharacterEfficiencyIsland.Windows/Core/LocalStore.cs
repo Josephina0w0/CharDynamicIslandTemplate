@@ -16,10 +16,10 @@ internal sealed class LocalStore
         Converters = { new JsonStringEnumConverter() }
     };
 
-    public LocalStore(AppProfile profile)
+    public LocalStore(AppProfile profile, string flavor)
     {
         var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        _folder = Path.Combine(localAppData, profile.StorageId);
+        _folder = Path.Combine(localAppData, profile.StorageId, flavor);
         _settingsPath = Path.Combine(_folder, "settings.json");
         _recordsPath = Path.Combine(_folder, "daily-records.json");
     }

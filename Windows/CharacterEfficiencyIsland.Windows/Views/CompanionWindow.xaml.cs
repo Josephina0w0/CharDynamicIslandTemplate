@@ -29,7 +29,7 @@ public partial class CompanionWindow : Window, ICharacterSurface
 
     public void Refresh(AppState state)
     {
-        CharacterImage.Source = AssetLoader.Image(AssetLoader.IslandAsset(state.DisplayMode));
+        CharacterImage.Source = AssetLoader.Image(state.Profile.IslandAsset(state.DisplayMode));
         BubbleTitle.Text = state.DisplayTitle;
         BubbleDetail.Text = state.DisplayDetail;
         if (state.Settings.ShowPersistentSurface)

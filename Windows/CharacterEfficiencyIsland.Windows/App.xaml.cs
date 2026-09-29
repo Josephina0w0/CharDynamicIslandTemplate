@@ -39,7 +39,7 @@ public partial class App : System.Windows.Application
             return;
         }
 
-        var store = new LocalStore(profile);
+        var store = new LocalStore(profile, BuildFlavor.Value);
         _state = new AppState(profile, store);
         _surface = BuildFlavor.Value == "companion"
             ? new CompanionWindow(_state, ShowPanelAtCursor)

@@ -46,11 +46,44 @@ public sealed class AppProfile
     public string MutexId { get; set; } = "com.example.character-efficiency-island.windows";
     public Dictionary<string, string> Titles { get; set; } = new();
     public Dictionary<string, string> Details { get; set; } = new();
+    public Dictionary<string, string> IslandAssets { get; set; } = new();
+    public Dictionary<string, string> PanelAssets { get; set; } = new();
     public List<SoftReminder> Reminders { get; set; } = new();
     public Dictionary<string, PanelPlacement> PanelPlacements { get; set; } = new();
 
     public string Title(CharacterMode mode) => Value(Titles, ModeKey(mode), CharacterName);
     public string Detail(CharacterMode mode) => Value(Details, ModeKey(mode), "按当前节奏继续。");
+    public string IslandAsset(CharacterMode mode) => Value(
+        IslandAssets,
+        ModeKey(mode),
+        mode switch
+        {
+            CharacterMode.BreakTime => "break",
+            CharacterMode.Idle => "idle",
+            CharacterMode.Ai => "ai",
+            CharacterMode.Water => "water",
+            CharacterMode.ReminderFirst => "reminder-first",
+            CharacterMode.ReminderSecond => "reminder-second",
+            CharacterMode.ReminderThird => "reminder-third",
+            CharacterMode.ReminderFourth => "reminder-fourth",
+            CharacterMode.Alert => "alert",
+            _ => "working"
+        });
+    public string PanelAsset(CharacterMode mode) => Value(
+        PanelAssets,
+        ModeKey(mode),
+        mode switch
+        {
+            CharacterMode.BreakTime => "panel-break",
+            CharacterMode.Idle => "panel-idle",
+            CharacterMode.Ai => "panel-ai",
+            CharacterMode.Water or CharacterMode.ReminderFirst => "panel-water",
+            CharacterMode.ReminderSecond => "panel-reminder-second",
+            CharacterMode.ReminderThird => "panel-reminder-third",
+            CharacterMode.ReminderFourth => "panel-reminder-fourth",
+            CharacterMode.Alert => "panel-ai",
+            _ => "panel-working"
+        });
     public PanelPlacement Placement(CharacterMode mode) =>
         PanelPlacements.TryGetValue(ModeKey(mode), out var value) ? value : new PanelPlacement();
 

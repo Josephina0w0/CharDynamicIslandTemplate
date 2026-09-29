@@ -51,34 +51,6 @@ internal static class AssetLoader
         }
     }
 
-    public static string IslandAsset(CharacterMode mode) => mode switch
-    {
-        CharacterMode.BreakTime => "break",
-        CharacterMode.Idle => "idle",
-        CharacterMode.Ai => "ai",
-        CharacterMode.Water => "water",
-        CharacterMode.ReminderFirst => "reminder-first",
-        CharacterMode.ReminderSecond => "reminder-second",
-        CharacterMode.ReminderThird => "reminder-third",
-        CharacterMode.ReminderFourth => "reminder-fourth",
-        CharacterMode.Alert => "alert",
-        _ => "working"
-    };
-
-    public static string PanelAsset(CharacterMode mode) => mode switch
-    {
-        CharacterMode.BreakTime => "panel-break",
-        CharacterMode.Idle => "panel-idle",
-        CharacterMode.Ai => "panel-ai",
-        CharacterMode.Water => "panel-water",
-        CharacterMode.ReminderFirst => "panel-water",
-        CharacterMode.ReminderSecond => "panel-reminder-second",
-        CharacterMode.ReminderThird => "panel-reminder-third",
-        CharacterMode.ReminderFourth => "panel-reminder-fourth",
-        CharacterMode.Alert => "panel-ai",
-        _ => "panel-working"
-    };
-
     private static ImageSource RemoveConnectedNearWhiteBackground(BitmapSource source)
     {
         var formatted = new FormatConvertedBitmap(source, PixelFormats.Bgra32, null, 0);

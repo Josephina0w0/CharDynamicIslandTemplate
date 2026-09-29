@@ -1,0 +1,44 @@
+{
+  "appName": "苏沐橙效率岛",
+  "characterName": "苏沐橙",
+  "storageId": "SuMuchengEfficiencyIsland.Windows",
+  "mutexId": "com.josephina.su-mucheng-efficiency-island.windows",
+  "titles": {
+    "working": "苏沐橙工作中", "breakTime": "休息倒计时", "idle": "苏沐橙待命中",
+    "alert": "苏沐橙提醒", "ai": "Codex 任务完成", "water": "喝水时间",
+    "reminderFirst": "喝水时间", "reminderSecond": "苏沐橙提醒",
+    "reminderThird": "苏沐橙提醒", "reminderFourth": "苏沐橙提醒"
+  },
+  "details": {
+    "working": "别急，一件一件来。",
+    "breakTime": "先休息五分钟吧。等状态回来，我们再继续。",
+    "idle": "暂时停一停也没关系，我在这里。",
+    "alert": "有件小事到时间啦，顺手处理一下吧。",
+    "ai": "新结果已经准备好啦，先检查一下再继续。",
+    "water": "先喝几口水。照顾好自己，也是在推进今天。",
+    "reminderFirst": "喝点水吧。忙的时候，更要记得照顾自己。",
+    "reminderSecond": "起来动一动，肩膀和眼睛都休息一下。",
+    "reminderThird": "上午辛苦啦。先放松一下，再看看接下来的安排。",
+    "reminderFourth": "今天做得够多了。整理一下，就安心收工吧。"
+  },
+  "reminders": [
+    { "id": "water", "title": "喝水", "schedule": "每 2 小时", "enabled": true },
+    { "id": "move", "title": "伸伸懒腰", "schedule": "每 1 小时", "enabled": true },
+    { "id": "noon", "title": "午间休息", "schedule": "12:00", "enabled": true },
+    { "id": "offwork", "title": "准备下班", "schedule": "19:00", "enabled": true }
+  ],
+  "islandAssets": { "alert": "panel-working" },
+  "panelAssets": { "alert": "alert" },
+  "panelPlacements": {
+    "working": { "height": 405, "bottom": -6, "right": 10 },
+    "breakTime": { "height": 330, "bottom": 2, "right": 0 },
+    "water": { "height": 270, "bottom": 149.8, "right": 0 },
+    "reminderFirst": { "height": 270, "bottom": 149.8, "right": 0 },
+    "idle": { "height": 260, "bottom": 149.5, "right": 8 },
+    "reminderSecond": { "height": 330, "bottom": 30, "right": 4 },
+    "reminderThird": { "height": 270, "bottom": 150, "right": 0 },
+    "reminderFourth": { "height": 310, "bottom": 81, "right": 12 },
+    "alert": { "height": 330, "bottom": 0, "right": 10 },
+    "ai": { "height": 245, "bottom": 150, "right": 0 }
+  }
+}

@@ -29,6 +29,7 @@ public partial class ControlPanelWindow : Window
     private Drawing.Point _trayAnchor;
     private bool _refreshing;
     private bool _allowClose;
+    private string StartupEntryName => $"{_state.Profile.AppName} · {(BuildFlavor.Value == "companion" ? "桌宠" : "灵动岛")}";
 
     public ControlPanelWindow(AppState state, ICharacterSurface surface, Action quit)
     {
@@ -115,7 +116,7 @@ public partial class ControlPanelWindow : Window
 
             AiReminderCheck.IsChecked = _state.Settings.AiRemindersEnabled;
             SurfaceCheck.IsChecked = _state.Settings.ShowPersistentSurface;
-            StartupCheck.IsChecked = StartupManager.IsEnabled(_state.Profile.AppName);
+            StartupCheck.IsChecked = StartupManager.IsEnabled(StartupEntryName);
 
             foreach (var reminder in _state.Reminders)
             {
@@ -134,7 +135,7 @@ public partial class ControlPanelWindow : Window
                 }
             }
 
-            PanelImage.Source = AssetLoader.Image(AssetLoader.PanelAsset(mode));
+            PanelImage.Source = AssetLoader.Image(_state.Profile.PanelAsset(mode));
             var placement = _state.Profile.Placement(mode);
             PanelImage.Height = placement.Height;
             PanelImage.Margin = new Thickness(0, 0, placement.Right, placement.Bottom);
@@ -225,7 +226,7 @@ public partial class ControlPanelWindow : Window
             return;
         }
         var wanted = StartupCheck.IsChecked == true;
-        if (!StartupManager.SetEnabled(_state.Profile.AppName, wanted))
+        if (!StartupManager.SetEnabled(StartupEntryName, wanted))
         {
             System.Windows.MessageBox.Show(
                 "没有成功修改 Windows 启动项。请确认当前安装位置可长期使用后再试。",
@@ -233,7 +234,7 @@ public partial class ControlPanelWindow : Window
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
             _refreshing = true;
-            StartupCheck.IsChecked = StartupManager.IsEnabled(_state.Profile.AppName);
+            StartupCheck.IsChecked = StartupManager.IsEnabled(StartupEntryName);
             _refreshing = false;
         }
     }

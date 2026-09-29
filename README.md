@@ -86,9 +86,12 @@ docs/RELEASE.md                                     构建与发布检查
 build_app.sh                                        一键构建并生成 zip
 scripts/verify_universal_app.sh                     验证双架构、签名、版本与 zip
 Windows/CharacterEfficiencyIsland.Windows/          Windows 11 WPF 通用工程
+Windows/CharacterPacks/                              Windows 七个角色的独立资料与图片包
 Windows/build_windows.ps1                           Windows EXE/ZIP 构建脚本
 docs/WINDOWS.md                                     Windows 安装、功能和测试说明
 ```
+
+Windows 构建脚本支持 `generic`、`huang-shaotian`、`zhang-xinjie`、`ye-xiu`、`ye-xiu-a`、`su-mucheng`、`su-muqiu`、`yu-wenzhou` 八个资料包。每个角色使用独立本地记录目录和启动项名称，不会互相覆盖。
 
 ## 只想直接让编程 AI 帮你做
 
