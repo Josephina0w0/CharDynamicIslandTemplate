@@ -5,7 +5,7 @@ param(
     [string]$Runtime = "win-x64",
     [ValidateSet("generic", "huang-shaotian", "zhang-xinjie", "ye-xiu", "ye-xiu-a", "su-mucheng", "su-muqiu", "yu-wenzhou")]
     [string]$CharacterPack = "generic",
-    [string]$Version = "0.1.4-win.3"
+    [string]$Version = "0.1.4-win.4"
 )
 
 $ErrorActionPreference = "Stop"

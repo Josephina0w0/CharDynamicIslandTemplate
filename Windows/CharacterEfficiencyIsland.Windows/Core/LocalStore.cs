@@ -83,10 +83,6 @@ internal sealed class LocalStore
             {
                 return CloneReminder(item);
             }
-            if (item.Id.Equals("water", StringComparison.OrdinalIgnoreCase))
-            {
-                saved.Title = item.Title;
-            }
             return saved;
         }).ToList();
     }

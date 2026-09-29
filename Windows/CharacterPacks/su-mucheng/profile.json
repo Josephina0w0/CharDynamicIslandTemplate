@@ -31,7 +31,7 @@
   "islandAssets": { "alert": "panel-working" },
   "panelAssets": { "alert": "alert" },
   "panelPlacements": {
-    "working": { "height": 405, "bottom": -6, "right": 10 },
+    "working": { "height": 405, "bottom": -6, "right": 10, "offsetY": 80 },
     "breakTime": { "height": 330, "bottom": 2, "right": 0 },
     "water": { "height": 270, "bottom": 149.8, "right": 0 },
     "reminderFirst": { "height": 270, "bottom": 149.8, "right": 0 },

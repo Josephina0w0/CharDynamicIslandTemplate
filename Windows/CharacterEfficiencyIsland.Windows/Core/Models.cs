@@ -36,6 +36,8 @@ public sealed class PanelPlacement
     public double Height { get; set; } = 300;
     public double Bottom { get; set; } = 20;
     public double Right { get; set; } = 12;
+    public double OffsetX { get; set; }
+    public double OffsetY { get; set; }
 }
 
 public sealed class AppProfile

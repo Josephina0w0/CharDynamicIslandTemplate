@@ -274,7 +274,7 @@ public sealed class AppState
             return;
         }
         reminder.Enabled = enabled;
-        if (!id.Equals("water", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(title))
+        if (!string.IsNullOrWhiteSpace(title))
         {
             reminder.Title = title.Trim();
         }

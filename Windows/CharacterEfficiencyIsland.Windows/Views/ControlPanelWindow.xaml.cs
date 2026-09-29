@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 using CharacterEfficiencyIsland.Windows.Core;
 using CharacterEfficiencyIsland.Windows.Interop;
@@ -152,6 +153,7 @@ public partial class ControlPanelWindow : Window
             var placement = _state.Profile.Placement(mode);
             PanelImage.Height = placement.Height;
             PanelImage.Margin = new Thickness(0, 0, placement.Right, 0);
+            PanelImage.RenderTransform = new TranslateTransform(placement.OffsetX, placement.OffsetY);
         }
         finally
         {
@@ -195,6 +197,8 @@ public partial class ControlPanelWindow : Window
 
             enabled.Checked += ReminderControl_OnChanged;
             enabled.Unchecked += ReminderControl_OnChanged;
+            title.TextChanged += ReminderControl_OnChanged;
+            schedule.TextChanged += ReminderControl_OnChanged;
             title.LostKeyboardFocus += ReminderControl_OnChanged;
             schedule.LostKeyboardFocus += ReminderControl_OnChanged;
         }
@@ -219,7 +223,29 @@ public partial class ControlPanelWindow : Window
         }
     }
 
-    private void ReminderControl_OnChanged(object sender, RoutedEventArgs e) => SaveReminderRows();
+    private void ReminderControl_OnChanged(object sender, RoutedEventArgs e)
+    {
+        if (_refreshing)
+        {
+            return;
+        }
+        foreach (var reminder in _state.Reminders)
+        {
+            if (!_reminderControls.TryGetValue(reminder.Id, out var controls) ||
+                (!ReferenceEquals(sender, controls.Enabled) &&
+                 !ReferenceEquals(sender, controls.Title) &&
+                 !ReferenceEquals(sender, controls.Schedule)))
+            {
+                continue;
+            }
+            _state.UpdateReminder(
+                reminder.Id,
+                controls.Enabled.IsChecked == true,
+                controls.Title.Text,
+                controls.Schedule.Text);
+            return;
+        }
+    }
 
     private void OptionCheck_OnChanged(object sender, RoutedEventArgs e)
     {

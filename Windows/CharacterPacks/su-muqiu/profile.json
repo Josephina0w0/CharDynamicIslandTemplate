@@ -35,7 +35,7 @@
   },
   "panelAssets": { "alert": "panel-working", "ai": "panel-working" },
   "panelPlacements": {
-    "working": { "height": 310, "bottom": 150, "right": -63 },
+    "working": { "height": 310, "bottom": 150, "right": 0 },
     "breakTime": { "height": 310, "bottom": 150, "right": -63 },
     "water": { "height": 268, "bottom": 149, "right": 0 },
     "reminderFirst": { "height": 268, "bottom": 149, "right": 0 },
