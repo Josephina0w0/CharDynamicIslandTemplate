@@ -57,11 +57,21 @@ public partial class App : System.Windows.Application
             RefreshWindows();
         });
 
-        _inputMonitor = new RawInputMonitor();
+        _inputMonitor = new RawInputMonitor(_state.Profile.StorageId);
+        _inputMonitor.Faulted += (_, detail) => Dispatcher.BeginInvoke(() =>
+        {
+            if (_state is null)
+            {
+                return;
+            }
+            _state.InputStatus = detail;
+            RefreshWindows();
+        });
         _inputMonitor.InputCaptured += (_, input) => _state.RecordInput(input);
-        _state.InputStatus = _inputMonitor.Start()
+        var inputStarted = _inputMonitor.Start();
+        _state.InputStatus = inputStarted
             ? "输入监测已启用：只记录按键类别、数量和鼠标点击，不保存输入内容"
-            : "输入监测启动失败；计时和提醒仍可使用，但 APM/EPM 不会完整";
+            : _inputMonitor.LastError ?? "输入监测启动失败；计时和提醒仍可使用，但 APM/EPM 不会完整";
 
         _timer = new DispatcherTimer(DispatcherPriority.Background)
         {
