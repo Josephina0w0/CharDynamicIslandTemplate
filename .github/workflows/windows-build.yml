@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - companion
+      - windows-visual-tuning
     paths:
       - "Windows/**"
       - "Sources/CharacterEfficiencyIsland/Assets/**"
@@ -46,7 +47,8 @@ jobs:
         id: flavor
         shell: pwsh
         run: |
-          $flavor = if ("${{ github.ref_name }}" -eq "companion") { "companion" } else { "dynamic-island" }
+          $companionBranches = @("companion", "windows-visual-tuning")
+          $flavor = if ($companionBranches -contains "${{ github.ref_name }}") { "companion" } else { "dynamic-island" }
           "value=$flavor" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
       - name: Build self-contained EXE and ZIP
