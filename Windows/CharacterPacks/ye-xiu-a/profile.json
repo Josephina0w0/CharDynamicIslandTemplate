@@ -3,6 +3,7 @@
   "characterName": "叶修",
   "storageId": "YeXiuAEfficiencyIsland.Windows",
   "mutexId": "com.josephina.ye-xiu-a-efficiency-island.windows",
+  "companionStatusText": "在线",
   "titles": {
     "working": "叶修工作中", "breakTime": "休息倒计时", "idle": "叶修待命中",
     "alert": "叶修提醒", "ai": "Codex 任务完成", "water": "喝水时间",

@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Threading;
 using CharacterEfficiencyIsland.Windows.Core;
 using CharacterEfficiencyIsland.Windows.Interop;
 using Drawing = System.Drawing;
@@ -58,7 +59,17 @@ public partial class ControlPanelWindow : Window
                 Hide();
             }
         };
-        Deactivated += (_, _) => SaveReminderRows();
+        Deactivated += (_, _) =>
+        {
+            SaveReminderRows();
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (!_allowClose && IsVisible && !IsActive)
+                {
+                    Hide();
+                }
+            }), DispatcherPriority.Background);
+        };
         Refresh();
     }
 
@@ -140,7 +151,7 @@ public partial class ControlPanelWindow : Window
             PanelImage.Source = AssetLoader.Image(_state.Profile.PanelAsset(mode));
             var placement = _state.Profile.Placement(mode);
             PanelImage.Height = placement.Height;
-            PanelImage.Margin = new Thickness(0, 0, placement.Right, placement.Bottom);
+            PanelImage.Margin = new Thickness(0, 0, placement.Right, 0);
         }
         finally
         {
@@ -160,8 +171,8 @@ public partial class ControlPanelWindow : Window
         {
             var row = new Grid { Margin = new Thickness(0, 1, 0, 1) };
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(24) });
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(105) });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(145) });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(92) });
 
             var enabled = new System.Windows.Controls.CheckBox
             {
@@ -170,8 +181,7 @@ public partial class ControlPanelWindow : Window
             };
             var title = new System.Windows.Controls.TextBox
             {
-                Text = reminder.Title,
-                IsReadOnly = reminder.Id == "water"
+                Text = reminder.Title
             };
             var schedule = new System.Windows.Controls.TextBox { Text = reminder.Schedule };
             Grid.SetColumn(enabled, 0);
@@ -246,6 +256,13 @@ public partial class ControlPanelWindow : Window
     private void TogglePause_OnClick(object sender, RoutedEventArgs e) => _state.TogglePause();
     private void Water_OnClick(object sender, RoutedEventArgs e) => _state.CheckInWater();
     private void ResetScale_OnClick(object sender, RoutedEventArgs e) => _surface.ResetScale();
+    private void ResetPanelScale_OnClick(object sender, RoutedEventArgs e)
+    {
+        _panelScale = 1;
+        _state.SetPanelScale(1, BuildFlavor.Value == "companion");
+        ApplyPanelScale();
+        PositionBottomAnchored();
+    }
     private void OpenRecords_OnClick(object sender, RoutedEventArgs e) => _state.OpenRecordFolder();
     private void Tracker_OnClick(object sender, RoutedEventArgs e) => _openTracker();
 
@@ -295,12 +312,13 @@ public partial class ControlPanelWindow : Window
             MinimumPanelScale,
             MaximumScaleForCurrentScreen());
         ApplyPanelScale();
+        PositionBottomAnchored();
     }
 
     private void PanelResize_OnDragCompleted(object sender, DragCompletedEventArgs e)
     {
         _state.SetPanelScale(_panelScale, BuildFlavor.Value == "companion");
-        PositionAgainstTaskbar(_trayAnchor);
+        PositionBottomAnchored();
     }
 
     private void ApplyPanelScale()
@@ -357,5 +375,17 @@ public partial class ControlPanelWindow : Window
             }
         }
         ScreenGeometry.SetPosition(this, x, y, screen);
+    }
+
+    private void PositionBottomAnchored()
+    {
+        var screen = Forms.Screen.FromPoint(_trayAnchor);
+        var area = screen.WorkingArea;
+        var scale = ScreenGeometry.ScaleAt(_trayAnchor);
+        var width = Width * scale;
+        var height = Height * scale;
+        var currentX = IsLoaded ? PointToScreen(new System.Windows.Point(0, 0)).X : _trayAnchor.X - width / 2;
+        var x = Math.Clamp(currentX, area.Left, Math.Max(area.Left, area.Right - width));
+        ScreenGeometry.SetPosition(this, x, area.Bottom - height, screen);
     }
 }

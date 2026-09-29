@@ -12,12 +12,12 @@
               BorderBrush="Transparent" BorderThickness="0" CornerRadius="24">
         <Grid>
           <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="330" />
+            <ColumnDefinition Width="315" />
             <ColumnDefinition Width="*" />
           </Grid.ColumnDefinitions>
 
-          <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="18,16,6,14">
-            <StackPanel>
+          <Grid Grid.Column="0" Margin="18,14,7,10" ClipToBounds="True">
+            <StackPanel VerticalAlignment="Top">
               <TextBlock x:Name="ModeTitle" Visibility="Collapsed" />
               <TextBlock x:Name="ModeSubtitle" Visibility="Collapsed" />
               <Border Height="1" Background="#18000000" Margin="0,2,0,7" />
@@ -30,34 +30,39 @@
                 <TextBlock x:Name="IdleLabel" Foreground="{StaticResource SecondaryText}" FontSize="11.5" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0" />
                 <Button Content="喝水打卡" Click="Water_OnClick" />
               </WrapPanel>
-              <TextBlock x:Name="TodayLabel" Foreground="#999999" FontSize="10.5" TextWrapping="Wrap" Margin="0,3,0,0" />
-              <TextBlock x:Name="TotalLabel" Foreground="#A6A6A6" FontSize="10.5" TextWrapping="Wrap" Margin="0,1,0,8" />
+              <TextBlock x:Name="TodayLabel" Foreground="#999999" FontSize="10.5" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Margin="0,3,0,0" />
+              <TextBlock x:Name="TotalLabel" Foreground="#A6A6A6" FontSize="10.5" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Margin="0,1,0,6" />
               <Border Height="1" Background="#18000000" Margin="0,0,0,7" />
               <TextBlock Text="定时提醒" FontSize="13.5" FontWeight="Bold" />
-              <StackPanel x:Name="ReminderRows" Margin="0,3,0,6" />
+              <StackPanel x:Name="ReminderRows" Margin="0,3,0,5" />
               <Border Height="1" Background="#18000000" Margin="0,0,0,7" />
               <CheckBox x:Name="AiReminderCheck" Content="Codex 完成提醒" Checked="OptionCheck_OnChanged" Unchecked="OptionCheck_OnChanged" />
               <CheckBox x:Name="SurfaceCheck" Content="显示常驻角色" Checked="OptionCheck_OnChanged" Unchecked="OptionCheck_OnChanged" />
               <CheckBox x:Name="StartupCheck" Content="登录 Windows 时启动" Checked="StartupCheck_OnChanged" Unchecked="StartupCheck_OnChanged" />
-              <TextBlock x:Name="CodexStatusLabel" Foreground="{StaticResource SecondaryText}" FontSize="10.5" TextWrapping="Wrap" Margin="0,1,0,4" />
+              <TextBlock x:Name="CodexStatusLabel" Foreground="{StaticResource SecondaryText}" FontSize="10.5" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Margin="0,1,0,3" />
               <WrapPanel Margin="0,1,0,3">
-                <TextBlock x:Name="ScaleLabel" VerticalAlignment="Center" Margin="0,0,12,0" />
-                <Button Content="重置人物大小" Click="ResetScale_OnClick" />
+                <TextBlock x:Name="ScaleLabel" FontSize="10.5" VerticalAlignment="Center" Margin="0,0,7,0" />
+                <Button Content="重置人物大小" FontSize="10" Padding="5,3" Margin="0,2,3,2" Click="ResetScale_OnClick" />
+                <Button Content="重置面板大小" FontSize="10" Padding="5,3" Margin="0,2,0,2" Click="ResetPanelScale_OnClick" />
               </WrapPanel>
               <WrapPanel>
                 <Button Content="休息 5 分钟" Click="StartBreak_OnClick" />
                 <Button Content="结束休息" Click="EndBreak_OnClick" />
                 <Button Content="暂停／继续" Click="TogglePause_OnClick" />
               </WrapPanel>
-              <WrapPanel>
-                <Button Content="清零今日" Click="ResetToday_OnClick" />
-                <Button Content="清空全部" Click="ResetAll_OnClick" />
-                <Button Content="打开记录" Click="OpenRecords_OnClick" />
-                <Button x:Name="TrackerButton" Content="Tracker" Click="Tracker_OnClick" />
-                <Button Content="退出" Click="Quit_OnClick" />
-              </WrapPanel>
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="*" /><ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="清零今日" FontSize="10" Padding="3,3" Margin="0,2,3,2" Click="ResetToday_OnClick" />
+                <Button Grid.Column="1" Content="清空全部" FontSize="10" Padding="3,3" Margin="0,2,3,2" Click="ResetAll_OnClick" />
+                <Button Grid.Column="2" Content="打开记录" FontSize="10" Padding="3,3" Margin="0,2,3,2" Click="OpenRecords_OnClick" />
+                <Button Grid.Column="3" x:Name="TrackerButton" Content="Tracker" FontSize="10" Padding="3,3" Margin="0,2,3,2" Click="Tracker_OnClick" />
+                <Button Grid.Column="4" Content="退出" FontSize="10" Padding="3,3" Margin="0,2,0,2" Click="Quit_OnClick" />
+              </Grid>
             </StackPanel>
-          </ScrollViewer>
+          </Grid>
 
           <Grid x:Name="ArtContainer" Grid.Column="1" ClipToBounds="True">
             <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>

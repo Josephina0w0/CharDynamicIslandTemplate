@@ -3,6 +3,7 @@
   "characterName": "苏沐橙",
   "storageId": "SuMuchengEfficiencyIsland.Windows",
   "mutexId": "com.josephina.su-mucheng-efficiency-island.windows",
+  "companionStatusText": "陪伴中",
   "titles": {
     "working": "苏沐橙工作中", "breakTime": "休息倒计时", "idle": "苏沐橙待命中",
     "alert": "苏沐橙提醒", "ai": "Codex 任务完成", "water": "喝水时间",

@@ -44,6 +44,7 @@ public sealed class AppProfile
     public string CharacterName { get; set; } = "角色";
     public string StorageId { get; set; } = "CharacterEfficiencyIsland";
     public string MutexId { get; set; } = "com.example.character-efficiency-island.windows";
+    public string CompanionStatusText { get; set; } = "稳步推进";
     public Dictionary<string, string> Titles { get; set; } = new();
     public Dictionary<string, string> Details { get; set; } = new();
     public Dictionary<string, string> IslandAssets { get; set; } = new();

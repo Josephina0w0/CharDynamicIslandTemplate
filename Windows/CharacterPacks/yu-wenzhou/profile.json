@@ -3,6 +3,7 @@
   "characterName": "喻文州",
   "storageId": "YuWenzhouEfficiencyIsland.Windows",
   "mutexId": "com.josephina.yu-wenzhou-efficiency-island.windows",
+  "companionStatusText": "稳步推进",
   "titles": {
     "working": "喻文州工作中", "breakTime": "休息倒计时", "idle": "喻文州待命中",
     "alert": "喻文州提醒", "ai": "Codex 任务完成", "water": "补充水分",
