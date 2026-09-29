@@ -11,6 +11,9 @@ param(
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 $project = Join-Path $PSScriptRoot "CharacterEfficiencyIsland.Windows/CharacterEfficiencyIsland.Windows.csproj"
+$projectDirectory = Split-Path -Parent $project
+$projectObj = Join-Path $projectDirectory "obj"
+$projectBin = Join-Path $projectDirectory "bin"
 $flavorFile = Join-Path $PSScriptRoot "CharacterEfficiencyIsland.Windows/BuildFlavor.cs"
 $profilePath = if ($CharacterPack -eq "generic") {
     Join-Path $PSScriptRoot "CharacterEfficiencyIsland.Windows/profile.json"
@@ -107,14 +110,27 @@ public static class NativeIconMethods {
     }
 }
 
+foreach ($generatedDirectory in @($projectObj, $projectBin)) {
+    $resolvedProject = [IO.Path]::GetFullPath($projectDirectory) + [IO.Path]::DirectorySeparatorChar
+    $resolvedGenerated = [IO.Path]::GetFullPath($generatedDirectory)
+    if (-not $resolvedGenerated.StartsWith($resolvedProject, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Refusing to clean build directory outside the Windows project: $resolvedGenerated"
+    }
+    if (Test-Path -LiteralPath $resolvedGenerated) {
+        Remove-Item -LiteralPath $resolvedGenerated -Recurse -Force
+    }
+}
 if (Test-Path $publishDir) {
     Remove-Item $publishDir -Recurse -Force
 }
 New-Item -ItemType Directory -Path $publishDir -Force | Out-Null
-$generatedIcon = Join-Path $PSScriptRoot "CharacterEfficiencyIsland.Windows/obj/generated-app-icons/$CharacterPack.ico"
+$generatedIcon = Join-Path $projectObj "generated-app-icons/$CharacterPack.ico"
 New-WindowsAppIcon -Source (Join-Path $assetRoot "statusIcon.png") -Destination $generatedIcon
 
 dotnet restore $project -r $Runtime -p:CharacterPack=$CharacterPack
+if ($LASTEXITCODE -ne 0) {
+    throw "dotnet restore failed for character pack '$CharacterPack'."
+}
 dotnet publish $project `
     -c Release `
     -r $Runtime `
@@ -128,6 +144,9 @@ dotnet publish $project `
     -p:IncludeNativeLibrariesForSelfExtract=true `
     -p:DebugType=None `
     -p:DebugSymbols=false
+if ($LASTEXITCODE -ne 0) {
+    throw "dotnet publish failed for character pack '$CharacterPack'."
+}
 
 $exe = Join-Path $publishDir "CharacterEfficiencyIsland.exe"
 if (-not (Test-Path $exe)) {
