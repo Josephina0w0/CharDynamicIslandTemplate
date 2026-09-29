@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using CharacterEfficiencyIsland.Windows.Core;
@@ -17,71 +19,112 @@ internal sealed class RawInputMonitor : IDisposable
     private const ushort MouseMiddleDown = 0x0010;
     private const ushort MouseButton4Down = 0x0040;
     private const ushort MouseButton5Down = 0x0100;
+    private const uint MaximumRawInputPacketSize = 64 * 1024;
 
     private readonly HashSet<ushort> _pressedKeys = new();
+    private readonly string _diagnosticPath;
     private HwndSource? _source;
+    private bool _disposed;
+    private DateTimeOffset _lastFaultWrittenAt;
 
     public event EventHandler<InputAction>? InputCaptured;
+    public event EventHandler<string>? Faulted;
     public bool IsActive { get; private set; }
+    public string? LastError { get; private set; }
+
+    public RawInputMonitor(string storageId)
+    {
+        _diagnosticPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            storageId,
+            "Diagnostics",
+            "raw-input-errors.log");
+    }
 
     public bool Start()
     {
+        if (_disposed)
+        {
+            return false;
+        }
         if (_source is not null)
         {
             return IsActive;
         }
 
-        var parameters = new HwndSourceParameters("CharacterEfficiencyIsland.RawInput")
+        try
         {
-            Width = 1,
-            Height = 1,
-            WindowStyle = unchecked((int)0x80000000)
-        };
-        _source = new HwndSource(parameters);
-        _source.AddHook(WindowHook);
+            var parameters = new HwndSourceParameters("CharacterEfficiencyIsland.RawInput")
+            {
+                Width = 1,
+                Height = 1,
+                WindowStyle = unchecked((int)0x80000000)
+            };
+            _source = new HwndSource(parameters);
+            _source.AddHook(WindowHook);
 
-        var devices = new[]
-        {
-            new RawInputDevice
+            var devices = new[]
             {
-                UsagePage = 0x01,
-                Usage = 0x06,
-                Flags = RidevInputSink,
-                Target = _source.Handle
-            },
-            new RawInputDevice
+                new RawInputDevice
+                {
+                    UsagePage = 0x01,
+                    Usage = 0x06,
+                    Flags = RidevInputSink,
+                    Target = _source.Handle
+                },
+                new RawInputDevice
+                {
+                    UsagePage = 0x01,
+                    Usage = 0x02,
+                    Flags = RidevInputSink,
+                    Target = _source.Handle
+                }
+            };
+
+            IsActive = RegisterRawInputDevices(
+                devices,
+                (uint)devices.Length,
+                (uint)Marshal.SizeOf<RawInputDevice>());
+            if (!IsActive)
             {
-                UsagePage = 0x01,
-                Usage = 0x02,
-                Flags = RidevInputSink,
-                Target = _source.Handle
+                ReportFault("RegisterRawInputDevices", new Win32Exception(Marshal.GetLastWin32Error()));
+                ReleaseSource();
             }
-        };
-
-        IsActive = RegisterRawInputDevices(
-            devices,
-            (uint)devices.Length,
-            (uint)Marshal.SizeOf<RawInputDevice>());
-        return IsActive;
+            return IsActive;
+        }
+        catch (Exception error)
+        {
+            IsActive = false;
+            ReportFault("Start", error);
+            ReleaseSource();
+            return false;
+        }
     }
 
     public void Dispose()
     {
-        IsActive = false;
-        if (_source is not null)
+        if (_disposed)
         {
-            _source.RemoveHook(WindowHook);
-            _source.Dispose();
-            _source = null;
+            return;
         }
+        _disposed = true;
+        IsActive = false;
+        ReleaseSource();
         _pressedKeys.Clear();
     }
 
     private IntPtr WindowHook(IntPtr hwnd, int message, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
-        if (message == WmInput)
+        if (message == WmInput && IsActive && !_disposed)
         {
-            ReadInput(lParam);
+            try
+            {
+                ReadInput(lParam);
+            }
+            catch (Exception error)
+            {
+                ReportFault("WM_INPUT", error);
+            }
         }
         return IntPtr.Zero;
     }
@@ -90,7 +133,8 @@ internal sealed class RawInputMonitor : IDisposable
     {
         uint size = 0;
         var headerSize = (uint)Marshal.SizeOf<RawInputHeader>();
-        if (GetRawInputData(rawInputHandle, RidInput, IntPtr.Zero, ref size, headerSize) == uint.MaxValue || size == 0)
+        if (GetRawInputData(rawInputHandle, RidInput, IntPtr.Zero, ref size, headerSize) == uint.MaxValue ||
+            size < headerSize || size > MaximumRawInputPacketSize)
         {
             return;
         }
@@ -98,18 +142,25 @@ internal sealed class RawInputMonitor : IDisposable
         var buffer = Marshal.AllocHGlobal((int)size);
         try
         {
-            if (GetRawInputData(rawInputHandle, RidInput, buffer, ref size, headerSize) != size)
+            var copied = GetRawInputData(rawInputHandle, RidInput, buffer, ref size, headerSize);
+            if (copied == uint.MaxValue || copied < headerSize || copied > MaximumRawInputPacketSize)
             {
                 return;
             }
 
             var header = Marshal.PtrToStructure<RawInputHeader>(buffer);
-            var data = IntPtr.Add(buffer, Marshal.SizeOf<RawInputHeader>());
-            if (header.Type == RimTypeKeyboard)
+            if (header.Size < headerSize || header.Size > copied)
+            {
+                return;
+            }
+
+            var dataSize = copied - headerSize;
+            var data = IntPtr.Add(buffer, checked((int)headerSize));
+            if (header.Type == RimTypeKeyboard && dataSize >= (uint)Marshal.SizeOf<RawKeyboard>())
             {
                 HandleKeyboard(Marshal.PtrToStructure<RawKeyboard>(data));
             }
-            else if (header.Type == RimTypeMouse)
+            else if (header.Type == RimTypeMouse && dataSize >= (uint)Marshal.SizeOf<RawMouse>())
             {
                 HandleMouse(Marshal.PtrToStructure<RawMouse>(data));
             }
@@ -137,7 +188,7 @@ internal sealed class RawInputMonitor : IDisposable
         var isRepeat = !_pressedKeys.Add(key);
         var isCorrection = key is 0x08 or 0x2E;
         var isPrintable = IsPrintableKey(key) && !HasCommandModifier();
-        InputCaptured?.Invoke(this, new InputAction(true, key, isCorrection, isPrintable, isRepeat));
+        Publish(new InputAction(true, key, isCorrection, isPrintable, isRepeat));
     }
 
     private void HandleMouse(RawMouse mouse)
@@ -152,7 +203,81 @@ internal sealed class RawInputMonitor : IDisposable
 
         for (var index = 0; index < clicks; index++)
         {
-            InputCaptured?.Invoke(this, new InputAction(false, 0, false, false, false));
+            Publish(new InputAction(false, 0, false, false, false));
+        }
+    }
+
+    private void Publish(InputAction input)
+    {
+        try
+        {
+            InputCaptured?.Invoke(this, input);
+        }
+        catch (Exception error)
+        {
+            ReportFault("InputCaptured", error);
+        }
+    }
+
+    private void ReleaseSource()
+    {
+        if (_source is null)
+        {
+            return;
+        }
+        try
+        {
+            _source.RemoveHook(WindowHook);
+            _source.Dispose();
+        }
+        catch (Exception error)
+        {
+            ReportFault("Dispose", error);
+        }
+        finally
+        {
+            _source = null;
+        }
+    }
+
+    private void ReportFault(string stage, Exception error)
+    {
+        var message = $"输入监测遇到 {error.GetType().Name}，已跳过异常输入；应用会继续运行";
+        LastError = message;
+        var now = DateTimeOffset.Now;
+        var shouldReport = now - _lastFaultWrittenAt >= TimeSpan.FromSeconds(1);
+        if (shouldReport)
+        {
+            _lastFaultWrittenAt = now;
+            try
+            {
+                var folder = Path.GetDirectoryName(_diagnosticPath);
+                if (!string.IsNullOrWhiteSpace(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+                File.AppendAllText(
+                    _diagnosticPath,
+                    $"[{now:O}] {stage}: {error}\n\n");
+            }
+            catch
+            {
+                // Diagnostics must never become another failure path.
+            }
+        }
+
+        if (!shouldReport)
+        {
+            return;
+        }
+
+        try
+        {
+            Faulted?.Invoke(this, message);
+        }
+        catch
+        {
+            // A status listener must not escape the native window callback either.
         }
     }
 
