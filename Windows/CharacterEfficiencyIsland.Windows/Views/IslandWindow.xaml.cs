@@ -38,7 +38,7 @@ public partial class IslandWindow : Window, ICharacterSurface
     public void Refresh(AppState state)
     {
         var mode = state.DisplayMode;
-        var image = AssetLoader.Image(AssetLoader.IslandAsset(mode));
+        var image = AssetLoader.Image(state.Profile.IslandAsset(mode));
         HorizontalImage.Source = image;
         VerticalImage.Source = image;
         HorizontalTitle.Text = state.DisplayTitle;

@@ -9,6 +9,12 @@ Windows 版与 macOS 0.1.4 使用同一组角色图片、提醒语义、30 分�
 
 两者共用状态、提醒、统计、记录、Codex 检测和托盘面板实现。角色版本应修改同一份 `profile.json` 和图片资源，而不是复制功能代码。
 
+## 内置角色包
+
+仓库目前包含一个纯净通用资料包和七个角色资料包：黄少天、张新杰、叶修、叶修A、苏沐橙、苏沐秋、喻文州。角色包位于 `Windows/CharacterPacks/<角色代号>/`，分别保存 `profile.json` 与 19 张状态图片。功能代码仍只有一份。
+
+每个角色使用独立的 App 名、单实例标识及 `%LOCALAPPDATA%` 根目录；灵动岛和桌宠再使用各自的子目录与 Windows 启动项名称。因此多个角色、同一角色的两种外壳均可同时保留，设置和记录不会互相覆盖。叶修A的界面角色名仍显示“叶修”，但安装包名和存储标识保持独立。
+
 ## 当前范围
 
 - Windows 11 x64 优先。
@@ -63,6 +69,13 @@ Windows 版与 macOS 0.1.4 使用同一组角色图片、提醒语义、30 分�
 ./Windows/verify_windows_package.ps1 -Flavor dynamic-island -Runtime win-x64
 ```
 
+构建指定角色时增加 `-CharacterPack`：
+
+```powershell
+./Windows/build_windows.ps1 -Flavor dynamic-island -CharacterPack ye-xiu -Runtime win-x64
+./Windows/verify_windows_package.ps1 -Flavor dynamic-island -CharacterPack ye-xiu -Runtime win-x64
+```
+
 `companion` 分支使用：
 
 ```powershell
@@ -70,7 +83,20 @@ Windows 版与 macOS 0.1.4 使用同一组角色图片、提醒语义、30 分�
 ./Windows/verify_windows_package.ps1 -Flavor companion -Runtime win-x64
 ```
 
-成品位于 `dist/windows/`。GitHub Actions 也会在 `main` 和 `companion` 分支更新时自动构建并提供下载 Artifact。
+可用的 `CharacterPack` 值为：
+
+```text
+generic
+huang-shaotian
+zhang-xinjie
+ye-xiu
+ye-xiu-a
+su-mucheng
+su-muqiu
+yu-wenzhou
+```
+
+成品位于 `dist/windows/`。角色包会生成角色名明确的 `.exe` 和 `.zip`；ZIP 内的主程序同样使用对应角色名。GitHub Actions 会在 `main` 和 `companion` 分支更新时为通用版和七个角色分别构建下载 Artifact。
 
 ## 测试重点
 
