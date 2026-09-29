@@ -307,6 +307,19 @@ public sealed class AppState
         Changed?.Invoke(this, EventArgs.Empty);
     }
 
+    public void SetPanelScale(double value, bool companion)
+    {
+        if (companion)
+        {
+            Settings.CompanionPanelScale = Math.Clamp(value, 0.65, 1.60);
+        }
+        else
+        {
+            Settings.DynamicIslandPanelScale = Math.Clamp(value, 0.65, 1.60);
+        }
+        SaveSettings();
+    }
+
     public void ResetToday()
     {
         _records[_dayKey] = new DailyRecord { Date = _dayKey };

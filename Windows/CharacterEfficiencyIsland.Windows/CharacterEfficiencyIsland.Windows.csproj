@@ -28,6 +28,9 @@
     <Resource Include="../../Sources/CharacterEfficiencyIsland/Assets/*.png">
       <Link>Assets/%(Filename)%(Extension)</Link>
     </Resource>
+    <Resource Include="../../variants/character-companion-general/Sources/Companion/Assets/Tracker/*.png">
+      <Link>Assets/Tracker/%(Filename)%(Extension)</Link>
+    </Resource>
     <EmbeddedResource Include="profile.json" />
   </ItemGroup>
 </Project>

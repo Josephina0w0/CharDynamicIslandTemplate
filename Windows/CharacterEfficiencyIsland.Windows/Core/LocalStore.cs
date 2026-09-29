@@ -38,6 +38,8 @@ internal sealed class LocalStore
             settings.Reminders = NormalizeReminders(settings.Reminders, profile.Reminders);
         }
         settings.SurfaceScale = Math.Clamp(settings.SurfaceScale, 0.75, 1.60);
+        settings.DynamicIslandPanelScale = Math.Clamp(settings.DynamicIslandPanelScale, 0.65, 1.60);
+        settings.CompanionPanelScale = Math.Clamp(settings.CompanionPanelScale, 0.65, 1.60);
         settings.SideOffsetRatio = Math.Clamp(settings.SideOffsetRatio, 0, 1);
         return settings;
     }

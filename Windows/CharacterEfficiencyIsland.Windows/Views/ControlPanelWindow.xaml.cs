@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using CharacterEfficiencyIsland.Windows.Core;
 using CharacterEfficiencyIsland.Windows.Interop;
@@ -10,6 +11,11 @@ namespace CharacterEfficiencyIsland.Windows.Views;
 
 public partial class ControlPanelWindow : Window
 {
+    private const double BasePanelWidth = 520;
+    private const double BasePanelHeight = 500;
+    private const double MinimumPanelScale = 0.65;
+    private const double MaximumPanelScale = 1.60;
+
     private sealed record ReminderControls(
         System.Windows.Controls.CheckBox Enabled,
         System.Windows.Controls.TextBox Title,
@@ -18,17 +24,30 @@ public partial class ControlPanelWindow : Window
     private readonly AppState _state;
     private readonly ICharacterSurface _surface;
     private readonly Action _quit;
+    private readonly Action _openTracker;
     private readonly Dictionary<string, ReminderControls> _reminderControls = new();
+    private double _panelScale;
+    private Drawing.Point _trayAnchor;
     private bool _refreshing;
     private bool _allowClose;
 
-    public ControlPanelWindow(AppState state, ICharacterSurface surface, Action quit)
+    public ControlPanelWindow(AppState state, ICharacterSurface surface, Action quit, Action openTracker)
     {
         _state = state;
         _surface = surface;
         _quit = quit;
+        _openTracker = openTracker;
+        _trayAnchor = Forms.Cursor.Position;
+        var savedPanelScale = BuildFlavor.Value == "companion"
+            ? state.Settings.CompanionPanelScale
+            : state.Settings.DynamicIslandPanelScale;
+        _panelScale = Math.Clamp(savedPanelScale, MinimumPanelScale, MaximumScaleForCurrentScreen());
         InitializeComponent();
-        WindowTitle.Text = state.Profile.AppName;
+        ApplyPanelScale();
+        SourceInitialized += (_, _) => WindowMaterial.ApplyAcrylic(
+            this,
+            unchecked((int)0x22505050),
+            () => 24 * _panelScale);
         BuildReminderRows();
         Closing += (_, args) =>
         {
@@ -56,6 +75,9 @@ public partial class ControlPanelWindow : Window
 
     public void ShowAt(Drawing.Point trayPoint)
     {
+        _trayAnchor = trayPoint;
+        _panelScale = Math.Clamp(_panelScale, MinimumPanelScale, MaximumScaleForCurrentScreen());
+        ApplyPanelScale();
         SaveReminderRows();
         Refresh();
         if (!IsVisible)
@@ -91,7 +113,7 @@ public partial class ControlPanelWindow : Window
             EpmLabel.Text = $"EPM {_state.CurrentEpm}/min";
             InputStatusLabel.Text = _state.InputStatus;
             CodexStatusLabel.Text = _state.CodexStatus;
-            ScaleLabel.Text = $"角色大小 {Math.Round(_state.Settings.SurfaceScale * 100):0}%";
+            ScaleLabel.Text = $"人物大小 {Math.Round(_state.Settings.SurfaceScale * 100):0}%";
 
             AiReminderCheck.IsChecked = _state.Settings.AiRemindersEnabled;
             SurfaceCheck.IsChecked = _state.Settings.ShowPersistentSurface;
@@ -135,10 +157,10 @@ public partial class ControlPanelWindow : Window
     {
         foreach (var reminder in _state.Reminders)
         {
-            var row = new Grid { Margin = new Thickness(0, 2, 0, 2) };
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(28) });
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(210) });
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(150) });
+            var row = new Grid { Margin = new Thickness(0, 1, 0, 1) };
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(24) });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(105) });
 
             var enabled = new System.Windows.Controls.CheckBox
             {
@@ -224,6 +246,7 @@ public partial class ControlPanelWindow : Window
     private void Water_OnClick(object sender, RoutedEventArgs e) => _state.CheckInWater();
     private void ResetScale_OnClick(object sender, RoutedEventArgs e) => _surface.ResetScale();
     private void OpenRecords_OnClick(object sender, RoutedEventArgs e) => _state.OpenRecordFolder();
+    private void Tracker_OnClick(object sender, RoutedEventArgs e) => _openTracker();
 
     private void ResetToday_OnClick(object sender, RoutedEventArgs e)
     {
@@ -250,6 +273,52 @@ public partial class ControlPanelWindow : Window
         {
             DragMove();
         }
+    }
+
+    private void PanelResize_OnDragDelta(object sender, DragDeltaEventArgs e)
+    {
+        var edge = (sender as FrameworkElement)?.Tag?.ToString() ?? "";
+        var horizontal = edge.Contains("Left", StringComparison.Ordinal)
+            ? -e.HorizontalChange
+            : edge.Contains("Right", StringComparison.Ordinal) ? e.HorizontalChange : 0;
+        var vertical = edge.Contains("Top", StringComparison.Ordinal)
+            ? -e.VerticalChange
+            : edge.Contains("Bottom", StringComparison.Ordinal) ? e.VerticalChange : 0;
+        var horizontalScale = horizontal / BasePanelWidth;
+        var verticalScale = vertical / BasePanelHeight;
+        var change = Math.Abs(horizontalScale) >= Math.Abs(verticalScale)
+            ? horizontalScale
+            : verticalScale;
+        _panelScale = Math.Clamp(
+            _panelScale + change,
+            MinimumPanelScale,
+            MaximumScaleForCurrentScreen());
+        ApplyPanelScale();
+    }
+
+    private void PanelResize_OnDragCompleted(object sender, DragCompletedEventArgs e)
+    {
+        _state.SetPanelScale(_panelScale, BuildFlavor.Value == "companion");
+        PositionAgainstTaskbar(_trayAnchor);
+    }
+
+    private void ApplyPanelScale()
+    {
+        Width = BasePanelWidth * _panelScale;
+        Height = BasePanelHeight * _panelScale;
+    }
+
+    private double MaximumScaleForCurrentScreen()
+    {
+        var screen = Forms.Screen.FromPoint(_trayAnchor);
+        var scale = ScreenGeometry.ScaleAt(_trayAnchor);
+        var availableWidth = screen.WorkingArea.Width / scale - 16;
+        var availableHeight = screen.WorkingArea.Height / scale - 16;
+        return Math.Max(
+            MinimumPanelScale,
+            Math.Min(MaximumPanelScale, Math.Min(
+                availableWidth / BasePanelWidth,
+                availableHeight / BasePanelHeight)));
     }
 
     private void PositionAgainstTaskbar(Drawing.Point trayPoint)

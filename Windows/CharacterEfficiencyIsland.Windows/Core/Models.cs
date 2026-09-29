@@ -73,6 +73,8 @@ public sealed class AppSettings
     public bool ShowPersistentSurface { get; set; } = true;
     public bool AiRemindersEnabled { get; set; } = true;
     public double SurfaceScale { get; set; } = 1.0;
+    public double DynamicIslandPanelScale { get; set; } = 1.0;
+    public double CompanionPanelScale { get; set; } = 1.0;
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public DockEdge DockEdge { get; set; } = DockEdge.Top;
     public string? DockScreenDevice { get; set; }

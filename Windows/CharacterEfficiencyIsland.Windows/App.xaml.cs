@@ -17,6 +17,7 @@ public partial class App : System.Windows.Application
     private RawInputMonitor? _inputMonitor;
     private CodexWatcher? _codexWatcher;
     private TrayIconService? _tray;
+    private TrackerCoordinator? _tracker;
     private ICharacterSurface? _surface;
     private ControlPanelWindow? _panel;
     private DispatcherTimer? _timer;
@@ -44,8 +45,16 @@ public partial class App : System.Windows.Application
         _surface = BuildFlavor.Value == "companion"
             ? new CompanionWindow(_state, ShowPanelAtCursor)
             : new IslandWindow(_state);
-        _panel = new ControlPanelWindow(_state, _surface, Quit);
-        _tray = new TrayIconService(profile, point => _panel.ToggleAt(point), Quit);
+        if (BuildFlavor.Value == "companion")
+        {
+            _tracker = new TrackerCoordinator(profile);
+        }
+        _panel = new ControlPanelWindow(_state, _surface, Quit, () => _tracker?.Show());
+        _tray = new TrayIconService(
+            profile,
+            point => _panel.ToggleAt(point),
+            _tracker is null ? null : () => _tracker.Show(),
+            Quit);
         _codexWatcher = new CodexWatcher(_state);
 
         _state.Changed += (_, _) => Dispatcher.Invoke(RefreshWindows);
@@ -73,6 +82,11 @@ public partial class App : System.Windows.Application
         if (_state.Settings.ShowPersistentSurface)
         {
             _surface.ShowSurface();
+        }
+
+        if (_tracker is not null && e.Args.Contains("--show-tracker", StringComparer.OrdinalIgnoreCase))
+        {
+            _tracker.Show();
         }
 
         if (!_state.Settings.FirstLaunchPanelShown && !e.Args.Contains("--startup", StringComparer.OrdinalIgnoreCase))
@@ -144,6 +158,7 @@ public partial class App : System.Windows.Application
             surfaceWindow.Close();
         }
         _panel?.CloseForExit();
+        _tracker?.CloseForExit();
         Shutdown();
     }
 

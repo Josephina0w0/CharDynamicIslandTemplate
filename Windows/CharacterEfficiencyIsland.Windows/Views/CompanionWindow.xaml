@@ -6,44 +6,44 @@
         ResizeMode="NoResize"
         AllowsTransparency="True"
         Background="Transparent"
+        FontFamily="Microsoft YaHei UI"
         ShowInTaskbar="False"
         ShowActivated="False"
         Topmost="True">
   <Grid MouseLeftButtonDown="Root_OnMouseLeftButtonDown">
     <Grid.RowDefinitions>
-      <RowDefinition Height="104" />
       <RowDefinition Height="*" />
+      <RowDefinition Height="41.4" />
     </Grid.RowDefinitions>
 
-    <Border Grid.Row="0"
-            Margin="8,4,8,0"
-            Padding="13,9"
-            Background="#EBFFFFFF"
-            BorderBrush="#33000000"
-            BorderThickness="1"
-            CornerRadius="17">
-      <StackPanel>
-        <TextBlock x:Name="BubbleTitle" FontSize="16" FontWeight="Bold" Foreground="#202020" TextTrimming="CharacterEllipsis" />
-        <TextBlock x:Name="BubbleDetail" FontSize="12.5" Foreground="#555555" TextWrapping="Wrap" MaxHeight="48" Margin="0,4,0,0" />
-      </StackPanel>
+    <Grid x:Name="CharacterResizeSurface"
+          Grid.Row="0"
+          HorizontalAlignment="Center"
+          VerticalAlignment="Bottom"
+          Margin="0">
+      <Image x:Name="CharacterImage" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Bottom" />
+      <primitives:Thumb Tag="Left" Width="18" HorizontalAlignment="Left" Cursor="SizeWE" Opacity="0.01" DragStarted="ResizeThumb_OnDragStarted" DragDelta="ResizeThumb_OnDragDelta" DragCompleted="ResizeThumb_OnDragCompleted" />
+      <primitives:Thumb Tag="Right" Width="18" HorizontalAlignment="Right" Cursor="SizeWE" Opacity="0.01" DragStarted="ResizeThumb_OnDragStarted" DragDelta="ResizeThumb_OnDragDelta" DragCompleted="ResizeThumb_OnDragCompleted" />
+      <primitives:Thumb Tag="Top" Height="18" VerticalAlignment="Top" Cursor="SizeNS" Opacity="0.01" DragStarted="ResizeThumb_OnDragStarted" DragDelta="ResizeThumb_OnDragDelta" DragCompleted="ResizeThumb_OnDragCompleted" />
+      <primitives:Thumb Tag="Bottom" Height="18" VerticalAlignment="Bottom" Cursor="SizeNS" Opacity="0.01" DragStarted="ResizeThumb_OnDragStarted" DragDelta="ResizeThumb_OnDragDelta" DragCompleted="ResizeThumb_OnDragCompleted" />
+    </Grid>
+
+    <Border Grid.Row="1"
+            Width="219.6"
+            Height="30.6"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Center"
+            Background="#CC8E8E8E"
+            CornerRadius="15.3">
+      <TextBlock x:Name="MetricsLabel"
+                 Margin="9,0"
+                 HorizontalAlignment="Stretch"
+                 VerticalAlignment="Center"
+                 TextAlignment="Center"
+                 FontSize="11.7"
+                 FontWeight="SemiBold"
+                 TextTrimming="CharacterEllipsis" />
     </Border>
 
-    <Image x:Name="CharacterImage"
-           Grid.Row="1"
-           Stretch="Uniform"
-           HorizontalAlignment="Center"
-           VerticalAlignment="Bottom" />
-
-    <primitives:Thumb x:Name="ResizeThumb"
-                      Grid.RowSpan="2"
-                      Width="24"
-                      Height="24"
-                      HorizontalAlignment="Right"
-                      VerticalAlignment="Bottom"
-                      Cursor="SizeNWSE"
-                      Opacity="0.01"
-                      DragStarted="ResizeThumb_OnDragStarted"
-                      DragDelta="ResizeThumb_OnDragDelta"
-                      DragCompleted="ResizeThumb_OnDragCompleted" />
   </Grid>
 </Window>
