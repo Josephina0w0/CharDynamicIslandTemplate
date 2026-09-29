@@ -51,10 +51,68 @@ foreach ($asset in $requiredAssets) {
     }
 }
 
+function New-WindowsAppIcon {
+    param(
+        [Parameter(Mandatory = $true)][string]$Source,
+        [Parameter(Mandatory = $true)][string]$Destination
+    )
+
+    Add-Type -AssemblyName System.Drawing.Common
+    if (-not ("NativeIconMethods" -as [type])) {
+        Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+public static class NativeIconMethods {
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern bool DestroyIcon(IntPtr handle);
+}
+"@
+    }
+
+    $sourceImage = [System.Drawing.Image]::FromFile($Source)
+    $canvas = [System.Drawing.Bitmap]::new(
+        256,
+        256,
+        [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+    $graphics = [System.Drawing.Graphics]::FromImage($canvas)
+    $iconHandle = [IntPtr]::Zero
+    try {
+        $graphics.Clear([System.Drawing.Color]::Transparent)
+        $graphics.CompositingMode = [System.Drawing.Drawing2D.CompositingMode]::SourceCopy
+        $graphics.CompositingQuality = [System.Drawing.Drawing2D.CompositingQuality]::HighQuality
+        $graphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+        $graphics.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+        $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+
+        $available = 248.0
+        $scale = [Math]::Min($available / $sourceImage.Width, $available / $sourceImage.Height)
+        $width = [Math]::Max(1, [int][Math]::Round($sourceImage.Width * $scale))
+        $height = [Math]::Max(1, [int][Math]::Round($sourceImage.Height * $scale))
+        $left = [int]((256 - $width) / 2)
+        $top = [int]((256 - $height) / 2)
+        $graphics.DrawImage($sourceImage, $left, $top, $width, $height)
+
+        $destinationFolder = Split-Path -Parent $Destination
+        New-Item -ItemType Directory -Path $destinationFolder -Force | Out-Null
+        $iconHandle = $canvas.GetHicon()
+        $icon = [System.Drawing.Icon]::FromHandle($iconHandle)
+        $stream = [System.IO.File]::Create($Destination)
+        try { $icon.Save($stream) } finally { $stream.Dispose(); $icon.Dispose() }
+    }
+    finally {
+        if ($iconHandle -ne [IntPtr]::Zero) { [NativeIconMethods]::DestroyIcon($iconHandle) | Out-Null }
+        $graphics.Dispose()
+        $canvas.Dispose()
+        $sourceImage.Dispose()
+    }
+}
+
 if (Test-Path $publishDir) {
     Remove-Item $publishDir -Recurse -Force
 }
 New-Item -ItemType Directory -Path $publishDir -Force | Out-Null
+$generatedIcon = Join-Path $PSScriptRoot "CharacterEfficiencyIsland.Windows/obj/generated-app-icons/$CharacterPack.ico"
+New-WindowsAppIcon -Source (Join-Path $assetRoot "statusIcon.png") -Destination $generatedIcon
 
 dotnet restore $project -r $Runtime -p:CharacterPack=$CharacterPack
 dotnet publish $project `
@@ -65,6 +123,7 @@ dotnet publish $project `
     -o $publishDir `
     -p:Version=$Version `
     -p:CharacterPack=$CharacterPack `
+    -p:ApplicationIcon=$generatedIcon `
     -p:PublishSingleFile=true `
     -p:IncludeNativeLibrariesForSelfExtract=true `
     -p:DebugType=None `

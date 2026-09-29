@@ -96,6 +96,7 @@ public partial class TrackerWindow : Window
     public void CloseForExit()
     {
         _allowClose = true;
+        Hide();
         SaveWindowState();
         Close();
     }

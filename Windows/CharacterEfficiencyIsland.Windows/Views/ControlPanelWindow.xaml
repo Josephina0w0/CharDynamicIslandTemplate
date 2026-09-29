@@ -62,7 +62,10 @@
           <Grid x:Name="ArtContainer" Grid.Column="1" ClipToBounds="True">
             <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
             <Border Grid.RowSpan="2" Width="1" Background="#10000000" HorizontalAlignment="Left" Margin="0,6,0,12" />
-            <StackPanel Grid.Row="0" Margin="14,18,8,6">
+            <Image x:Name="PanelImage" Grid.RowSpan="2" Stretch="Uniform"
+                   HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                   IsHitTestVisible="False" Panel.ZIndex="0" />
+            <StackPanel Grid.Row="0" Margin="14,18,8,6" Panel.ZIndex="1">
               <TextBlock Text="输入仪表" FontSize="13.5" FontWeight="Bold" Foreground="{StaticResource SecondaryText}" Margin="0,0,0,5" />
               <TextBlock x:Name="TypingLabel" FontSize="12" FontWeight="Bold" Margin="0,1.5" />
               <TextBlock x:Name="RawSpeedLabel" FontSize="12" FontWeight="Bold" Margin="0,1.5" />
@@ -72,7 +75,6 @@
               <TextBlock x:Name="EpmLabel" FontSize="12" FontWeight="Bold" Margin="0,1.5" />
               <TextBlock x:Name="InputStatusLabel" Foreground="{StaticResource SecondaryText}" FontSize="9.5" TextWrapping="Wrap" Margin="0,5,0,0" />
             </StackPanel>
-            <Image x:Name="PanelImage" Grid.Row="1" Stretch="Uniform" MaxWidth="190" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
           </Grid>
         </Grid>
       </Border>

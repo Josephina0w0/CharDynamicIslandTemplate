@@ -16,6 +16,8 @@
     <CharacterPack Condition="'$(CharacterPack)' == ''">generic</CharacterPack>
     <CharacterAssetRoot Condition="'$(CharacterPack)' == 'generic'">../../Sources/CharacterEfficiencyIsland/Assets</CharacterAssetRoot>
     <CharacterAssetRoot Condition="'$(CharacterPack)' != 'generic'">../CharacterPacks/$(CharacterPack)/Assets</CharacterAssetRoot>
+    <CharacterTrackerRoot Condition="'$(CharacterPack)' == 'generic'">../../variants/character-companion-general/Sources/Companion/Assets/Tracker</CharacterTrackerRoot>
+    <CharacterTrackerRoot Condition="'$(CharacterPack)' != 'generic'">../CharacterPacks/$(CharacterPack)/Tracker</CharacterTrackerRoot>
     <CharacterProfileFile Condition="'$(CharacterPack)' == 'generic'">profile.json</CharacterProfileFile>
     <CharacterProfileFile Condition="'$(CharacterPack)' != 'generic'">../CharacterPacks/$(CharacterPack)/profile.json</CharacterProfileFile>
     <PublishSingleFile>true</PublishSingleFile>
@@ -33,7 +35,7 @@
     <Resource Include="$(CharacterAssetRoot)/*.png">
       <Link>Assets/%(Filename)%(Extension)</Link>
     </Resource>
-    <Resource Include="../../variants/character-companion-general/Sources/Companion/Assets/Tracker/*.png">
+    <Resource Include="$(CharacterTrackerRoot)/*.png">
       <Link>Assets/Tracker/%(Filename)%(Extension)</Link>
     </Resource>
     <EmbeddedResource Include="$(CharacterProfileFile)" LogicalName="CharacterEfficiencyIsland.Windows.profile.json" />
