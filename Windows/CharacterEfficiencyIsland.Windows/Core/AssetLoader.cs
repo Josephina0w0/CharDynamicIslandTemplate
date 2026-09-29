@@ -38,7 +38,31 @@ internal static class AssetLoader
             return (Drawing.Icon)Drawing.SystemIcons.Application.Clone();
         }
 
-        using var bitmap = new Drawing.Bitmap(resource.Stream);
+        using var source = new Drawing.Bitmap(resource.Stream);
+        const int iconSize = 64;
+        const int inset = 2;
+        using var bitmap = new Drawing.Bitmap(
+            iconSize,
+            iconSize,
+            Drawing.Imaging.PixelFormat.Format32bppArgb);
+        using (var graphics = Drawing.Graphics.FromImage(bitmap))
+        {
+            graphics.Clear(Drawing.Color.Transparent);
+            graphics.CompositingMode = Drawing.Drawing2D.CompositingMode.SourceCopy;
+            graphics.CompositingQuality = Drawing.Drawing2D.CompositingQuality.HighQuality;
+            graphics.InterpolationMode = Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            graphics.PixelOffsetMode = Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+            graphics.SmoothingMode = Drawing.Drawing2D.SmoothingMode.HighQuality;
+
+            var available = iconSize - inset * 2;
+            var scale = Math.Min(available / (double)source.Width, available / (double)source.Height);
+            var width = Math.Max(1, (int)Math.Round(source.Width * scale));
+            var height = Math.Max(1, (int)Math.Round(source.Height * scale));
+            var left = (iconSize - width) / 2;
+            var top = (iconSize - height) / 2;
+            graphics.DrawImage(source, new Drawing.Rectangle(left, top, width, height));
+        }
+
         var handle = bitmap.GetHicon();
         try
         {

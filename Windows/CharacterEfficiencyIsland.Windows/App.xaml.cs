@@ -26,6 +26,7 @@ public partial class App : System.Windows.Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
         var profile = ProfileLoader.Load();
         _singleInstance = new Mutex(true, $"Local\\{profile.MutexId}.{BuildFlavor.Value}", out var createdNew);
         if (!createdNew)
@@ -138,13 +139,14 @@ public partial class App : System.Windows.Application
             return;
         }
         _exiting = true;
-        Cleanup();
+        _panel?.CloseForExit();
         if (_surface is Window surfaceWindow)
         {
+            surfaceWindow.Hide();
             surfaceWindow.Close();
         }
-        _panel?.CloseForExit();
-        Shutdown();
+        Cleanup();
+        Shutdown(0);
     }
 
     private void Cleanup()
