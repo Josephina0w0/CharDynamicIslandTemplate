@@ -10,8 +10,40 @@ internal static class AssetLoader
 {
     private static readonly Dictionary<string, ImageSource> Cache = new(StringComparer.OrdinalIgnoreCase);
 
-    public static ImageSource Image(string assetName)
-        => ImageFromPack(assetName, $"/Assets/{assetName}.png");
+    public static ImageSource Image(
+        string assetName,
+        int rotationDegrees = 0,
+        int cropTop = 0,
+        int cropBottom = 0)
+    {
+        if (rotationDegrees == 0 && cropTop == 0 && cropBottom == 0)
+        {
+            return ImageFromPack(assetName, $"/Assets/{assetName}.png");
+        }
+
+        var cacheKey = $"{assetName}|rotation:{rotationDegrees}|crop-top:{cropTop}|crop-bottom:{cropBottom}";
+        if (Cache.TryGetValue(cacheKey, out var cached))
+        {
+            return cached;
+        }
+
+        var source = (BitmapSource)ImageFromPack(assetName, $"/Assets/{assetName}.png");
+        if (cropTop > 0 || cropBottom > 0)
+        {
+            var top = Math.Clamp(cropTop, 0, source.PixelHeight - 1);
+            var height = Math.Max(1, source.PixelHeight - top - Math.Max(0, cropBottom));
+            source = new CroppedBitmap(
+                source,
+                new Int32Rect(0, top, source.PixelWidth, height));
+        }
+        if (rotationDegrees != 0)
+        {
+            source = new TransformedBitmap(source, new RotateTransform(rotationDegrees));
+        }
+        source.Freeze();
+        Cache[cacheKey] = source;
+        return source;
+    }
 
     public static ImageSource TrackerCharacter() =>
         ImageFromPack("tracker-character", "/Assets/Tracker/character.png");

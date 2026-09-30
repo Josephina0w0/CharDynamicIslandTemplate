@@ -28,6 +28,7 @@
     { "id": "noon", "title": "午间休息", "schedule": "12:00", "enabled": true },
     { "id": "offwork", "title": "准备下班", "schedule": "19:00", "enabled": true }
   ],
+  "companionCropBottom": { "reminderFourth": 417 },
   "islandAssets": { "alert": "panel-working" },
   "panelAssets": { "alert": "alert" },
   "panelPlacements": {
@@ -37,7 +38,7 @@
     "reminderFirst": { "height": 270, "bottom": 149.8, "right": 0 },
     "idle": { "height": 260, "bottom": 149.5, "right": 8 },
     "reminderSecond": { "height": 330, "bottom": 30, "right": 4 },
-    "reminderThird": { "height": 270, "bottom": 150, "right": 0 },
+    "reminderThird": { "height": 270, "bottom": 150, "right": 0, "rotation": -90 },
     "reminderFourth": { "height": 310, "bottom": 81, "right": 12 },
     "alert": { "height": 330, "bottom": 0, "right": 10 },
     "ai": { "height": 245, "bottom": 150, "right": 0 }

@@ -31,6 +31,7 @@ public partial class ControlPanelWindow : Window
     private double _panelScale;
     private Drawing.Point _trayAnchor;
     private bool _refreshing;
+    private bool _savingReminderRows;
     private bool _allowClose;
     private string StartupEntryName => $"{_state.Profile.AppName} · {(BuildFlavor.Value == "companion" ? "桌宠" : "灵动岛")}";
 
@@ -132,27 +133,34 @@ public partial class ControlPanelWindow : Window
             SurfaceCheck.IsChecked = _state.Settings.ShowPersistentSurface;
             StartupCheck.IsChecked = StartupManager.IsEnabled(StartupEntryName);
 
-            foreach (var reminder in _state.Reminders)
+            if (!_savingReminderRows)
             {
-                if (!_reminderControls.TryGetValue(reminder.Id, out var controls))
+                foreach (var reminder in _state.Reminders)
                 {
-                    continue;
-                }
-                controls.Enabled.IsChecked = reminder.Enabled;
-                if (!controls.Title.IsKeyboardFocusWithin)
-                {
-                    controls.Title.Text = reminder.Title;
-                }
-                if (!controls.Schedule.IsKeyboardFocusWithin)
-                {
-                    controls.Schedule.Text = reminder.Schedule;
+                    if (!_reminderControls.TryGetValue(reminder.Id, out var controls))
+                    {
+                        continue;
+                    }
+                    controls.Enabled.IsChecked = reminder.Enabled;
+                    if (!controls.Title.IsKeyboardFocusWithin)
+                    {
+                        controls.Title.Text = reminder.Title;
+                    }
+                    if (!controls.Schedule.IsKeyboardFocusWithin)
+                    {
+                        controls.Schedule.Text = reminder.Schedule;
+                    }
                 }
             }
 
-            PanelImage.Source = AssetLoader.Image(_state.Profile.PanelAsset(mode));
             var placement = _state.Profile.Placement(mode);
+            PanelImage.Source = AssetLoader.Image(
+                _state.Profile.PanelAsset(mode),
+                rotationDegrees: placement.Rotation,
+                cropTop: placement.CropTop,
+                cropBottom: placement.CropBottom);
             PanelImage.Height = placement.Height;
-            PanelImage.Margin = new Thickness(0, 0, placement.Right, 0);
+            PanelImage.Margin = new Thickness(0, 0, placement.Right, placement.BottomOffset);
             PanelImage.RenderTransform = new TranslateTransform(placement.OffsetX, placement.OffsetY);
         }
         finally
@@ -206,20 +214,28 @@ public partial class ControlPanelWindow : Window
 
     private void SaveReminderRows()
     {
-        if (_refreshing)
+        if (_refreshing || _savingReminderRows)
         {
             return;
         }
-        foreach (var reminder in _state.Reminders)
+        _savingReminderRows = true;
+        try
         {
-            if (_reminderControls.TryGetValue(reminder.Id, out var controls))
+            foreach (var reminder in _state.Reminders)
             {
-                _state.UpdateReminder(
-                    reminder.Id,
-                    controls.Enabled.IsChecked == true,
-                    controls.Title.Text,
-                    controls.Schedule.Text);
+                if (_reminderControls.TryGetValue(reminder.Id, out var controls))
+                {
+                    _state.UpdateReminder(
+                        reminder.Id,
+                        controls.Enabled.IsChecked == true,
+                        controls.Title.Text,
+                        controls.Schedule.Text);
+                }
             }
+        }
+        finally
+        {
+            _savingReminderRows = false;
         }
     }
 

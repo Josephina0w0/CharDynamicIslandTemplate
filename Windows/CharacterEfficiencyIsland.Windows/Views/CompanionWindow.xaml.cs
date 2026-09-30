@@ -44,7 +44,9 @@ public partial class CompanionWindow : Window, ICharacterSurface
 
     public void Refresh(AppState state)
     {
-        CharacterImage.Source = AssetLoader.Image(state.Profile.IslandAsset(state.DisplayMode));
+        CharacterImage.Source = AssetLoader.Image(
+            state.Profile.IslandAsset(state.DisplayMode),
+            cropBottom: state.Profile.CompanionBottomCrop(state.DisplayMode));
         var epm = state.CurrentApm == 0 ? "--" : state.CurrentEpm.ToString("00");
         MetricsLabel.Text = $"{state.Profile.CompanionStatusText} {state.FormatSeconds(state.WorkSeconds)} · EPM {epm}";
         MetricsLabel.ToolTip = MetricsLabel.Text;

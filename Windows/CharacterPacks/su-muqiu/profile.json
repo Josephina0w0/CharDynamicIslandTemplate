@@ -42,7 +42,7 @@
     "idle": { "height": 310, "bottom": 150, "right": -63 },
     "reminderSecond": { "height": 310, "bottom": 150, "right": -59 },
     "reminderThird": { "height": 310, "bottom": 150, "right": 0 },
-    "reminderFourth": { "height": 358, "bottom": 178, "right": -94 },
+    "reminderFourth": { "height": 360, "bottom": 178, "right": 12, "rotation": 90, "cropTop": 397, "cropBottom": 233, "bottomOffset": 140 },
     "alert": { "height": 310, "bottom": 150, "right": -63 },
     "ai": { "height": 310, "bottom": 150, "right": -63 }
   }

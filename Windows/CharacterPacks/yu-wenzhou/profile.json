@@ -28,6 +28,7 @@
     { "id": "noon", "title": "午休", "schedule": "11:00", "enabled": true },
     { "id": "offwork", "title": "下班", "schedule": "16:30", "enabled": true }
   ],
+  "companionCropBottom": { "reminderFourth": 552 },
   "panelAssets": { "alert": "alert" },
   "panelPlacements": {
     "working": { "height": 310, "bottom": 43, "right": 10 },

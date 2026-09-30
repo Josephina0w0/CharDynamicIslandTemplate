@@ -38,6 +38,10 @@ public sealed class PanelPlacement
     public double Right { get; set; } = 12;
     public double OffsetX { get; set; }
     public double OffsetY { get; set; }
+    public int Rotation { get; set; }
+    public int CropTop { get; set; }
+    public int CropBottom { get; set; }
+    public double BottomOffset { get; set; }
 }
 
 public sealed class AppProfile
@@ -51,6 +55,7 @@ public sealed class AppProfile
     public Dictionary<string, string> Details { get; set; } = new();
     public Dictionary<string, string> IslandAssets { get; set; } = new();
     public Dictionary<string, string> PanelAssets { get; set; } = new();
+    public Dictionary<string, int> CompanionCropBottom { get; set; } = new();
     public List<SoftReminder> Reminders { get; set; } = new();
     public Dictionary<string, PanelPlacement> PanelPlacements { get; set; } = new();
 
@@ -89,6 +94,8 @@ public sealed class AppProfile
         });
     public PanelPlacement Placement(CharacterMode mode) =>
         PanelPlacements.TryGetValue(ModeKey(mode), out var value) ? value : new PanelPlacement();
+    public int CompanionBottomCrop(CharacterMode mode) =>
+        CompanionCropBottom.TryGetValue(ModeKey(mode), out var value) ? Math.Max(0, value) : 0;
 
     public static string ModeKey(CharacterMode mode) => mode switch
     {
