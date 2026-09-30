@@ -51,10 +51,14 @@ public sealed class AppProfile
     public string StorageId { get; set; } = "CharacterEfficiencyIsland";
     public string MutexId { get; set; } = "com.example.character-efficiency-island.windows";
     public string CompanionStatusText { get; set; } = "稳步推进";
+    public string CompanionBreakStatusText { get; set; } = "休息中";
     public Dictionary<string, string> Titles { get; set; } = new();
     public Dictionary<string, string> Details { get; set; } = new();
     public Dictionary<string, string> IslandAssets { get; set; } = new();
     public Dictionary<string, string> PanelAssets { get; set; } = new();
+    public Dictionary<string, int> CompanionCropLeft { get; set; } = new();
+    public Dictionary<string, int> CompanionCropTop { get; set; } = new();
+    public Dictionary<string, int> CompanionCropRight { get; set; } = new();
     public Dictionary<string, int> CompanionCropBottom { get; set; } = new();
     public List<SoftReminder> Reminders { get; set; } = new();
     public Dictionary<string, PanelPlacement> PanelPlacements { get; set; } = new();
@@ -94,8 +98,11 @@ public sealed class AppProfile
         });
     public PanelPlacement Placement(CharacterMode mode) =>
         PanelPlacements.TryGetValue(ModeKey(mode), out var value) ? value : new PanelPlacement();
+    public int CompanionLeftCrop(CharacterMode mode) => Crop(CompanionCropLeft, mode);
+    public int CompanionTopCrop(CharacterMode mode) => Crop(CompanionCropTop, mode);
+    public int CompanionRightCrop(CharacterMode mode) => Crop(CompanionCropRight, mode);
     public int CompanionBottomCrop(CharacterMode mode) =>
-        CompanionCropBottom.TryGetValue(ModeKey(mode), out var value) ? Math.Max(0, value) : 0;
+        Crop(CompanionCropBottom, mode);
 
     public static string ModeKey(CharacterMode mode) => mode switch
     {
@@ -109,6 +116,8 @@ public sealed class AppProfile
 
     private static string Value(Dictionary<string, string> source, string key, string fallback) =>
         source.TryGetValue(key, out var value) && !string.IsNullOrWhiteSpace(value) ? value : fallback;
+    private static int Crop(Dictionary<string, int> source, CharacterMode mode) =>
+        source.TryGetValue(ModeKey(mode), out var value) ? Math.Max(0, value) : 0;
 }
 
 public sealed class AppSettings

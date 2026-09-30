@@ -4,6 +4,7 @@
   "storageId": "HuangShaotianEfficiencyIsland.Windows",
   "mutexId": "com.josephina.huang-shaotian-efficiency-island.windows",
   "companionStatusText": "抢占进度",
+  "companionBreakStatusText": "摸鱼中",
   "titles": {
     "working": "黄少天工作中", "breakTime": "休息倒计时", "idle": "黄少天待命中",
     "alert": "黄少天有话说", "ai": "Codex 任务完成", "water": "喝水时间",
@@ -28,6 +29,8 @@
     { "id": "noon", "title": "午休", "schedule": "11:00", "enabled": true },
     { "id": "offwork", "title": "下班", "schedule": "16:30", "enabled": true }
   ],
+  "companionCropLeft": { "breakTime": 70 },
+  "companionCropRight": { "breakTime": 405 },
   "panelAssets": { "alert": "alert" },
   "panelPlacements": {
     "working": { "height": 310, "bottom": 50, "right": 10 },

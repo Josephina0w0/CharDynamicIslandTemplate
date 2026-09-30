@@ -4,6 +4,7 @@
   "storageId": "YeXiuAEfficiencyIsland.Windows",
   "mutexId": "com.josephina.ye-xiu-a-efficiency-island.windows",
   "companionStatusText": "在线",
+  "companionBreakStatusText": "摸鱼中",
   "titles": {
     "working": "叶修工作中", "breakTime": "休息倒计时", "idle": "叶修待命中",
     "alert": "叶修提醒", "ai": "Codex 任务完成", "water": "喝水时间",
@@ -28,8 +29,8 @@
     { "id": "noon", "title": "午间复盘", "schedule": "11:00", "enabled": true },
     { "id": "offwork", "title": "收工", "schedule": "16:30", "enabled": true }
   ],
-  "islandAssets": { "alert": "panel-ai" },
-  "panelAssets": { "alert": "alert" },
+  "islandAssets": { "alert": "alert" },
+  "panelAssets": { "alert": "panel-ai" },
   "panelPlacements": {
     "working": { "height": 240, "bottom": 150, "right": 0 },
     "breakTime": { "height": 240, "bottom": 150, "right": -2.03 },

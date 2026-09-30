@@ -13,28 +13,32 @@ internal static class AssetLoader
     public static ImageSource Image(
         string assetName,
         int rotationDegrees = 0,
+        int cropLeft = 0,
         int cropTop = 0,
+        int cropRight = 0,
         int cropBottom = 0)
     {
-        if (rotationDegrees == 0 && cropTop == 0 && cropBottom == 0)
+        if (rotationDegrees == 0 && cropLeft == 0 && cropTop == 0 && cropRight == 0 && cropBottom == 0)
         {
             return ImageFromPack(assetName, $"/Assets/{assetName}.png");
         }
 
-        var cacheKey = $"{assetName}|rotation:{rotationDegrees}|crop-top:{cropTop}|crop-bottom:{cropBottom}";
+        var cacheKey = $"{assetName}|rotation:{rotationDegrees}|crop-left:{cropLeft}|crop-top:{cropTop}|crop-right:{cropRight}|crop-bottom:{cropBottom}";
         if (Cache.TryGetValue(cacheKey, out var cached))
         {
             return cached;
         }
 
         var source = (BitmapSource)ImageFromPack(assetName, $"/Assets/{assetName}.png");
-        if (cropTop > 0 || cropBottom > 0)
+        if (cropLeft > 0 || cropTop > 0 || cropRight > 0 || cropBottom > 0)
         {
+            var left = Math.Clamp(cropLeft, 0, source.PixelWidth - 1);
             var top = Math.Clamp(cropTop, 0, source.PixelHeight - 1);
+            var width = Math.Max(1, source.PixelWidth - left - Math.Max(0, cropRight));
             var height = Math.Max(1, source.PixelHeight - top - Math.Max(0, cropBottom));
             source = new CroppedBitmap(
                 source,
-                new Int32Rect(0, top, source.PixelWidth, height));
+                new Int32Rect(left, top, width, height));
         }
         if (rotationDegrees != 0)
         {

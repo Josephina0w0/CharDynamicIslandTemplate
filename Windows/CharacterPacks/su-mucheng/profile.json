@@ -4,6 +4,7 @@
   "storageId": "SuMuchengEfficiencyIsland.Windows",
   "mutexId": "com.josephina.su-mucheng-efficiency-island.windows",
   "companionStatusText": "陪伴中",
+  "companionBreakStatusText": "嗑瓜子中",
   "titles": {
     "working": "苏沐橙工作中", "breakTime": "休息倒计时", "idle": "苏沐橙待命中",
     "alert": "苏沐橙提醒", "ai": "Codex 任务完成", "water": "喝水时间",
@@ -28,9 +29,24 @@
     { "id": "noon", "title": "午间休息", "schedule": "12:00", "enabled": true },
     { "id": "offwork", "title": "准备下班", "schedule": "19:00", "enabled": true }
   ],
-  "companionCropBottom": { "reminderFourth": 417 },
-  "islandAssets": { "alert": "panel-working" },
-  "panelAssets": { "alert": "alert" },
+  "companionCropLeft": {
+    "breakTime": 17, "reminderFirst": 210, "reminderSecond": 92,
+    "reminderThird": 122, "reminderFourth": 21
+  },
+  "companionCropTop": {
+    "breakTime": 393, "reminderFirst": 20, "reminderSecond": 18,
+    "reminderThird": 45, "reminderFourth": 417
+  },
+  "companionCropRight": {
+    "breakTime": 17, "reminderFirst": 52, "reminderSecond": 14,
+    "reminderThird": 85, "reminderFourth": 21
+  },
+  "companionCropBottom": {
+    "breakTime": 393, "reminderFirst": 40, "reminderSecond": 45,
+    "reminderThird": 0, "reminderFourth": 417
+  },
+  "islandAssets": { "alert": "alert" },
+  "panelAssets": { "alert": "panel-working" },
   "panelPlacements": {
     "working": { "height": 405, "bottom": -6, "right": 10, "offsetY": 80 },
     "breakTime": { "height": 330, "bottom": 2, "right": 0 },

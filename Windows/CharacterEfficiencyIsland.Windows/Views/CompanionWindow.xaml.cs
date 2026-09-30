@@ -46,9 +46,15 @@ public partial class CompanionWindow : Window, ICharacterSurface
     {
         CharacterImage.Source = AssetLoader.Image(
             state.Profile.IslandAsset(state.DisplayMode),
+            cropLeft: state.Profile.CompanionLeftCrop(state.DisplayMode),
+            cropTop: state.Profile.CompanionTopCrop(state.DisplayMode),
+            cropRight: state.Profile.CompanionRightCrop(state.DisplayMode),
             cropBottom: state.Profile.CompanionBottomCrop(state.DisplayMode));
         var epm = state.CurrentApm == 0 ? "--" : state.CurrentEpm.ToString("00");
-        MetricsLabel.Text = $"{state.Profile.CompanionStatusText} {state.FormatSeconds(state.WorkSeconds)} · EPM {epm}";
+        var statusText = state.Mode == CharacterMode.BreakTime
+            ? state.Profile.CompanionBreakStatusText
+            : state.Profile.CompanionStatusText;
+        MetricsLabel.Text = $"{statusText} {state.FormatSeconds(state.WorkSeconds)} · EPM {epm}";
         MetricsLabel.ToolTip = MetricsLabel.Text;
         if (state.Settings.ShowPersistentSurface)
         {

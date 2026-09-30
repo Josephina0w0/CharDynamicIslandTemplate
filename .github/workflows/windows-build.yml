@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - companion
+      - windows-companion
       - windows-visual-tuning
     paths:
       - "Windows/**"
@@ -47,7 +48,7 @@ jobs:
         id: flavor
         shell: pwsh
         run: |
-          $companionBranches = @("companion", "windows-visual-tuning")
+          $companionBranches = @("companion", "windows-companion", "windows-visual-tuning")
           $flavor = if ($companionBranches -contains "${{ github.ref_name }}") { "companion" } else { "dynamic-island" }
           "value=$flavor" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 

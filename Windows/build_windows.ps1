@@ -61,51 +61,80 @@ function New-WindowsAppIcon {
     )
 
     Add-Type -AssemblyName System.Drawing.Common
-    if (-not ("NativeIconMethods" -as [type])) {
-        Add-Type -TypeDefinition @"
-using System;
-using System.Runtime.InteropServices;
-public static class NativeIconMethods {
-    [DllImport("user32.dll", SetLastError = true)]
-    public static extern bool DestroyIcon(IntPtr handle);
-}
-"@
-    }
-
     $sourceImage = [System.Drawing.Image]::FromFile($Source)
-    $canvas = [System.Drawing.Bitmap]::new(
-        256,
-        256,
-        [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
-    $graphics = [System.Drawing.Graphics]::FromImage($canvas)
-    $iconHandle = [IntPtr]::Zero
+    $iconSizes = @(16, 20, 24, 32, 40, 48, 64, 128, 256)
+    $pngStreams = [System.Collections.Generic.List[System.IO.MemoryStream]]::new()
     try {
-        $graphics.Clear([System.Drawing.Color]::Transparent)
-        $graphics.CompositingMode = [System.Drawing.Drawing2D.CompositingMode]::SourceCopy
-        $graphics.CompositingQuality = [System.Drawing.Drawing2D.CompositingQuality]::HighQuality
-        $graphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
-        $graphics.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
-        $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+        foreach ($iconSize in $iconSizes) {
+            $canvas = [System.Drawing.Bitmap]::new(
+                $iconSize,
+                $iconSize,
+                [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+            $graphics = [System.Drawing.Graphics]::FromImage($canvas)
+            try {
+                $graphics.Clear([System.Drawing.Color]::Transparent)
+                $graphics.CompositingMode = [System.Drawing.Drawing2D.CompositingMode]::SourceCopy
+                $graphics.CompositingQuality = [System.Drawing.Drawing2D.CompositingQuality]::HighQuality
+                $graphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+                $graphics.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+                $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
 
-        $available = 248.0
-        $scale = [Math]::Min($available / $sourceImage.Width, $available / $sourceImage.Height)
-        $width = [Math]::Max(1, [int][Math]::Round($sourceImage.Width * $scale))
-        $height = [Math]::Max(1, [int][Math]::Round($sourceImage.Height * $scale))
-        $left = [int]((256 - $width) / 2)
-        $top = [int]((256 - $height) / 2)
-        $graphics.DrawImage($sourceImage, $left, $top, $width, $height)
+                $inset = [Math]::Max(1, [int][Math]::Round($iconSize / 64.0))
+                $available = $iconSize - ($inset * 2)
+                $scale = [Math]::Min($available / $sourceImage.Width, $available / $sourceImage.Height)
+                $width = [Math]::Max(1, [int][Math]::Round($sourceImage.Width * $scale))
+                $height = [Math]::Max(1, [int][Math]::Round($sourceImage.Height * $scale))
+                $left = [int](($iconSize - $width) / 2)
+                $top = [int](($iconSize - $height) / 2)
+                $graphics.DrawImage($sourceImage, $left, $top, $width, $height)
+
+                $pngStream = [System.IO.MemoryStream]::new()
+                $canvas.Save($pngStream, [System.Drawing.Imaging.ImageFormat]::Png)
+                $pngStream.Position = 0
+                $pngStreams.Add($pngStream)
+            }
+            finally {
+                $graphics.Dispose()
+                $canvas.Dispose()
+            }
+        }
 
         $destinationFolder = Split-Path -Parent $Destination
         New-Item -ItemType Directory -Path $destinationFolder -Force | Out-Null
-        $iconHandle = $canvas.GetHicon()
-        $icon = [System.Drawing.Icon]::FromHandle($iconHandle)
         $stream = [System.IO.File]::Create($Destination)
-        try { $icon.Save($stream) } finally { $stream.Dispose(); $icon.Dispose() }
+        $writer = [System.IO.BinaryWriter]::new($stream)
+        try {
+            # ICONDIR: reserved, image type, image count.
+            $writer.Write([uint16]0)
+            $writer.Write([uint16]1)
+            $writer.Write([uint16]$iconSizes.Count)
+
+            $dataOffset = 6 + (16 * $iconSizes.Count)
+            for ($index = 0; $index -lt $iconSizes.Count; $index++) {
+                $iconSize = $iconSizes[$index]
+                $pngLength = [uint32]$pngStreams[$index].Length
+                $dimension = if ($iconSize -eq 256) { [byte]0 } else { [byte]$iconSize }
+                $writer.Write($dimension)
+                $writer.Write($dimension)
+                $writer.Write([byte]0)
+                $writer.Write([byte]0)
+                $writer.Write([uint16]1)
+                $writer.Write([uint16]32)
+                $writer.Write($pngLength)
+                $writer.Write([uint32]$dataOffset)
+                $dataOffset += $pngLength
+            }
+
+            foreach ($pngStream in $pngStreams) {
+                $pngStream.WriteTo($stream)
+            }
+        }
+        finally {
+            $writer.Dispose()
+        }
     }
     finally {
-        if ($iconHandle -ne [IntPtr]::Zero) { [NativeIconMethods]::DestroyIcon($iconHandle) | Out-Null }
-        $graphics.Dispose()
-        $canvas.Dispose()
+        foreach ($pngStream in $pngStreams) { $pngStream.Dispose() }
         $sourceImage.Dispose()
     }
 }
