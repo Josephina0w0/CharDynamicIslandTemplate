@@ -1,6 +1,6 @@
 # 陪伴版-喻文州
 
-这是喻文州原生 iPhone/iPad 陪伴 App 的完整复用入口。当前基线版本为 `0.1.0 (15)`，包含陪伴首页、大小两种交互式 Widget、锁屏实时活动、灵动岛、四项提醒、Tracker、日/周/月工作记录，以及 Widget 凝固自愈修复。
+这是喻文州原生 iPhone/iPad 陪伴 App 的完整复用入口。当前基线版本为 `0.1.0 (16)`，包含陪伴首页、大小两种交互式 Widget、锁屏实时活动、灵动岛、四项提醒、Tracker、日/周/月工作记录，以及 Widget 凝固与按钮同步修复。
 
 ## 入口
 
@@ -36,8 +36,8 @@ companion-pack/skills/companion-yuwenzhou-mobile
 生成后的文件放在 `dist/`：
 
 - `陪伴版-喻文州-source.zip`：完整移动端源码与文档。
-- `陪伴版-喻文州-build15-iphoneos.app.zip`：当前签名环境下的 iPhone App 包。
-- `陪伴版-喻文州-build15-simulator.app.zip`：模拟器 App 包。
+- `陪伴版-喻文州-build16-iphoneos.app.zip`：当前签名环境下的 iPhone App 包。
+- `陪伴版-喻文州-build16-simulator.app.zip`：模拟器 App 包。
 - `companion-yuwenzhou-mobile.skill.zip`：可单独安装的 Codex Skill。
 - `SHA256SUMS`：所有压缩包的完整性校验值。
 

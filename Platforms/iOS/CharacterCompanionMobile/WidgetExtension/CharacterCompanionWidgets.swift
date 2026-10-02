@@ -194,7 +194,7 @@ private enum CompanionWidgetTimeline {
 }
 
 struct CharacterCompanionWidget: Widget {
-    let kind = "YuWenzhouCompanionWidget"
+    let kind = CompanionWidgetIdentifier.main
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: CompanionWidgetProvider()) { entry in
@@ -222,23 +222,26 @@ private struct CompanionWidgetView: View {
     let entry: CompanionWidgetEntry
 
     var body: some View {
-        if entry.isShowingWaterFeedback(at: entry.date) {
-            if family == .systemMedium {
+        Group {
+            if entry.isShowingWaterFeedback(at: entry.date) {
+                if family == .systemMedium {
+                    medium
+                } else {
+                    small
+                }
+            } else if let reminder = entry.reminder {
+                if family == .systemMedium {
+                    reminderMedium(reminder)
+                } else {
+                    reminderSmall(reminder)
+                }
+            } else if family == .systemMedium {
                 medium
             } else {
                 small
             }
-        } else if let reminder = entry.reminder {
-            if family == .systemMedium {
-                reminderMedium(reminder)
-            } else {
-                reminderSmall(reminder)
-            }
-        } else if family == .systemMedium {
-            medium
-        } else {
-            small
         }
+        .invalidatableContent()
     }
 
     private var small: some View {
@@ -350,7 +353,9 @@ private struct CompanionWidgetView: View {
 
     private var smallControls: some View {
         VStack(spacing: 6) {
-            Button(intent: ToggleFromWidgetIntent()) {
+            Button(intent: SetModeFromWidgetIntent(
+                target: entry.state.mode == .working ? .resting : .working
+            )) {
                 Image(systemName: entry.state.mode == .working ? "cup.and.saucer.fill" : "play.fill")
                     .foregroundStyle(.white)
                     .frame(width: 24, height: 18)
@@ -373,7 +378,9 @@ private struct CompanionWidgetView: View {
 
     private var controls: some View {
         HStack(spacing: 9) {
-            Button(intent: ToggleFromWidgetIntent()) {
+            Button(intent: SetModeFromWidgetIntent(
+                target: entry.state.mode == .working ? .resting : .working
+            )) {
                 Label(entry.state.mode == .working ? "休息" : "工作", systemImage: entry.state.mode == .working ? "cup.and.saucer.fill" : "play.fill")
                     .foregroundStyle(.white)
             }

@@ -58,6 +58,8 @@ CompanionActionRuntime
 
 Widget entries are state snapshots, not a live binding. Continuous timer motion comes from SwiftUI's `Text(timerInterval:pauseTime:countsDown:showsHours:)`. The provider requests a recovery timeline every 15 minutes so a deferred intent reload cannot leave an obsolete paused/state snapshot visible for hours.
 
+The Widget work/rest control uses an explicit target mode and conforms to `LiveActivityIntent` so iOS runs notification scheduling and ActivityKit updates in the containing app process. Keep this action idempotent: a repeated request to enter the already-active mode must not reset its timer or create another interval. Request the Widget timeline reload immediately after the coordinated App Group write, before slower notification or ActivityKit work.
+
 Do not schedule per-second Widget timeline entries. WidgetKit controls refresh budgets and may defer them. Do not extend the recovery horizon to several hours without another freshness mechanism.
 
 Water feedback lasts five seconds and temporarily changes visual content. Its end transition is included in the timeline, but the underlying state start date remains unchanged.
@@ -80,4 +82,5 @@ Records are derived only from `WorkInterval`. `RecordsAnalytics` clips intervals
 - Never reuse a baseline App Group or bundle ID for a new installed variant.
 - Never attach large original images directly to ActivityKit state; keep compact images in the asset catalog.
 - Never rely on a downloaded or temporary image path at runtime.
+- Never replace the Widget's explicit target-mode intent with a blind toggle; the system may retry an interaction or render a stale snapshot.
 - Keep widget and app build numbers equal so iOS installs the intended extension.

@@ -12,6 +12,8 @@ enum CoreStateMachineTests {
         state.preferences.countdownMinutes = 5
         let breakStart = start.addingTimeInterval(600)
         expect(state.transition(to: .resting, source: .widget, now: breakStart), "应能从工作切换到休息")
+        expect(!state.transition(to: .resting, source: .widget, now: breakStart.addingTimeInterval(1)), "重复设置休息状态必须保持幂等")
+        expect(state.stateStartedAt == breakStart, "重复设置休息状态不得重置计时")
         expect(state.workIntervals[0].endedAt == breakStart, "开始休息时应结束工作区间")
         expect(state.breakEndAt == breakStart.addingTimeInterval(300), "倒计时结束时间应使用设置值")
         state.preferences.restMode = .stopwatch

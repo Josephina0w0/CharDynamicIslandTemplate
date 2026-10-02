@@ -13,6 +13,10 @@ enum CompanionNotificationID {
     static let reminderPrefix = "companion.reminder."
 }
 
+enum CompanionWidgetIdentifier {
+    static let main = "YuWenzhouCompanionWidget"
+}
+
 enum CompanionActionRuntime {
     @discardableResult
     static func toggle(source: StateSource, now: Date = Date()) async throws -> CompanionState {
@@ -20,6 +24,26 @@ enum CompanionActionRuntime {
             let target: CompanionMode = state.mode == .working ? .resting : .working
             state.transition(to: target, source: source, now: now)
         }
+        requestWidgetReload()
+        await finishModeTransition(with: state, at: now)
+        return state
+    }
+
+    @discardableResult
+    static func setMode(
+        _ target: CompanionMode,
+        source: StateSource,
+        now: Date = Date()
+    ) async throws -> CompanionState {
+        let state = try SharedStateRepository.shared.mutate(now: now) { state in
+            state.transition(to: target, source: source, now: now)
+        }
+        requestWidgetReload()
+        await finishModeTransition(with: state, at: now)
+        return state
+    }
+
+    private static func finishModeTransition(with state: CompanionState, at now: Date) async {
         if state.mode == .resting,
            state.currentRestMode == .countdown,
            let end = state.breakEndAt {
@@ -28,7 +52,6 @@ enum CompanionActionRuntime {
             CompanionNotificationScheduler.cancelBreakFinished()
         }
         await refreshSystemSurfaces(with: state, at: now, startLiveActivityIfMissing: true)
-        return state
     }
 
     @discardableResult
@@ -95,7 +118,7 @@ enum CompanionActionRuntime {
         at date: Date = Date(),
         startLiveActivityIfMissing: Bool = false
     ) async {
-        WidgetCenter.shared.reloadAllTimelines()
+        requestWidgetReload()
         let content = CompanionActivityAttributes.ContentState.make(from: state, at: date)
         let staleDate = nextSurfaceChangeDate(in: state, at: date)
         let activities = Activity<CompanionActivityAttributes>.activities
@@ -114,6 +137,10 @@ enum CompanionActionRuntime {
         for activity in activities {
             await activity.update(ActivityContent(state: content, staleDate: staleDate))
         }
+    }
+
+    private static func requestWidgetReload() {
+        WidgetCenter.shared.reloadTimelines(ofKind: CompanionWidgetIdentifier.main)
     }
 
     private static func nextSurfaceChangeDate(in state: CompanionState, at date: Date) -> Date? {
@@ -256,14 +283,48 @@ enum CompanionNotificationScheduler {
     }
 }
 
-struct ToggleFromWidgetIntent: AppIntent {
-    static let title: LocalizedStringResource = "切换工作或休息"
-    static let description = IntentDescription("结束当前区间并开始另一个区间。")
+enum CompanionWidgetMode: String, AppEnum {
+    case working
+    case resting
+
+    static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "陪伴状态")
+    static let caseDisplayRepresentations: [CompanionWidgetMode: DisplayRepresentation] = [
+        .working: "工作",
+        .resting: "休息"
+    ]
+
+    var mode: CompanionMode {
+        self == .working ? .working : .resting
+    }
+}
+
+/// LiveActivityIntent deliberately runs in the containing app process. The widget
+/// action also schedules notifications and updates ActivityKit, which can be
+/// deferred or terminated when an ordinary AppIntent runs in the widget process.
+struct SetModeFromWidgetIntent: LiveActivityIntent {
+    static let title: LocalizedStringResource = "设置工作或休息"
+    static let description = IntentDescription("结束当前区间并开始指定的工作或休息区间。")
     static let openAppWhenRun = false
 
-    func perform() async throws -> some IntentResult {
-        _ = try await CompanionActionRuntime.toggle(source: .widget)
-        WidgetCenter.shared.reloadAllTimelines()
+    @Parameter(title: "目标状态")
+    var target: CompanionWidgetMode
+
+    init() {
+        target = .resting
+    }
+
+    init(target: CompanionWidgetMode) {
+        self.target = target
+    }
+
+    func perform() async -> some IntentResult {
+        do {
+            _ = try await CompanionActionRuntime.setMode(target.mode, source: .widget)
+        } catch {
+            // Returning normally guarantees WidgetKit asks the provider for a new
+            // timeline even if a transient shared-container write failed.
+            WidgetCenter.shared.reloadTimelines(ofKind: CompanionWidgetIdentifier.main)
+        }
         return .result()
     }
 }
@@ -272,9 +333,12 @@ struct LogWaterFromWidgetIntent: AppIntent {
     static let title: LocalizedStringResource = "喝水打卡"
     static let openAppWhenRun = false
 
-    func perform() async throws -> some IntentResult {
-        _ = try await CompanionActionRuntime.logWater(source: .widget)
-        WidgetCenter.shared.reloadAllTimelines()
+    func perform() async -> some IntentResult {
+        do {
+            _ = try await CompanionActionRuntime.logWater(source: .widget)
+        } catch {
+            WidgetCenter.shared.reloadTimelines(ofKind: CompanionWidgetIdentifier.main)
+        }
         return .result()
     }
 }

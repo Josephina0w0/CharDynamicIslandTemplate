@@ -2,7 +2,7 @@
   "packageName": "陪伴版-喻文州",
   "skillName": "companion-yuwenzhou-mobile",
   "version": "0.1.0",
-  "build": 15,
+  "build": 16,
   "bundleIdentifier": "local.codex.yuwenzhou.companion.mobile",
   "widgetBundleIdentifier": "local.codex.yuwenzhou.companion.mobile.widget",
   "appGroup": "group.local.codex.yuwenzhou.companion.mobile",
@@ -20,6 +20,7 @@
     "Daily Top 3 and local project Tracker",
     "read-only EventKit calendar and reminders",
     "daily weekly monthly work records",
-    "dynamic widget timer with recovery refresh"
+    "dynamic widget timer with recovery refresh",
+    "idempotent widget mode actions executed in the app process"
   ]
 }

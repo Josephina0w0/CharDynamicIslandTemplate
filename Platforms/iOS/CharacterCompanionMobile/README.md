@@ -36,7 +36,7 @@ watchOS 已纳入路线，但会在 iPhone/iPad 第一阶段完成模拟器截�
 
 当前 Xcode 27 已完成主 App、Widget 的 iOS Simulator 与 iOS arm64 真机架构构建。iOS 27 与 watchOS 27 runtime 均已安装；主 App 与大小两种 Widget 已在 iPhone 13 Pro 模拟器完成显示验收，并已使用 Personal Team 签名、安装和启动在实体 iPhone 13 Pro（Jo’s MagicPhone）上。App 截图保存在 `Docs/Screenshots/phase1-iphone13pro-clean-v7.png`，Widget 截图保存在 `Docs/Screenshots/phase1-home-widgets-fixed-v10.png`。第二阶段提醒区与深色模式截图分别保存在 `Docs/Screenshots/phase2-reminders-top-v1.png` 和 `Docs/Screenshots/phase2-dark-v3.png`。
 
-当前移动端版本为 `0.1.0 (15)`。第 15 版把 Widget 工作／休息计时改为系统持续计时区间，并把状态快照的恢复刷新从原来的六小时长窗口收紧为 15 分钟；即使系统延迟一次 AppIntent 刷新，也不会让旧暂停状态或旧界面长时间凝固。
+当前移动端版本为 `0.1.0 (16)`。第 15 版把 Widget 工作／休息计时改为系统持续计时区间，并把状态快照的恢复刷新从原来的六小时长窗口收紧为 15 分钟。第 16 版让桌面 Widget 的工作／休息按钮在主 App 进程执行，以明确的目标状态替代非幂等“切换”，并在共享状态写入后立即请求目标 Widget 刷新。
 
 ### 第一阶段验收状态
 

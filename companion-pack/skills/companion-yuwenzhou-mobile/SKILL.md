@@ -33,6 +33,7 @@ Do not overwrite this baseline when producing another character. Run `scripts/cr
 - The app, Widget extension, and Live Activity use one App Group event ledger. Preserve atomic coordinated writes.
 - A state transition closes the current work/rest interval before opening the next one. Never infer work from screen time, app foreground time, or device uptime.
 - Widget buttons and Live Activity buttons mutate the same shared state, then request refreshes for all system surfaces.
+- Widget mode buttons set an explicit target state in the app process; keep them idempotent instead of implementing a blind toggle in the extension process.
 - Widget timers must use SwiftUI timer intervals so they continue without per-second timeline entries. Keep the 15-minute recovery refresh; do not restore the old six-hour stale-state horizon.
 - Water feedback is visual and temporary. It must not interrupt the underlying work/rest timer.
 - Tracker data remains independent SwiftData content. EventKit calendars and reminders remain read-only unless the user explicitly broadens scope.
