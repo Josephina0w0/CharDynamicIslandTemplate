@@ -1,0 +1,55 @@
+<Window x:Class="CharacterEfficiencyIsland.Windows.Views.ProjectPipelineWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="项目进度" Width="1120" Height="650" WindowStartupLocation="CenterOwner"
+        FontFamily="Microsoft YaHei UI" Background="#FFF2F2F2" ShowInTaskbar="False">
+  <Grid Margin="24,18">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="64" />
+      <RowDefinition Height="72" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="48" />
+    </Grid.RowDefinitions>
+    <StackPanel>
+      <TextBlock Text="项目、任务与协作进度" FontSize="22" FontWeight="Bold" />
+      <TextBlock Text="项目阶段、负责人、最近更新、下次跟进、截止日期和下一步都会自动保存在本机。" Foreground="{StaticResource SecondaryText}" />
+    </StackPanel>
+    <Border Grid.Row="1" Background="#60FFFFFF" BorderBrush="#22000000" BorderThickness="1" CornerRadius="12" Padding="10">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="110" /><ColumnDefinition Width="150" /><ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <ComboBox x:Name="PriorityBox" SelectedIndex="1" Margin="0,2,8,2">
+          <ComboBoxItem Content="优先级 A" /><ComboBoxItem Content="优先级 B" /><ComboBoxItem Content="优先级 C" />
+        </ComboBox>
+        <ComboBox x:Name="FocusStatusBox" Grid.Column="1" Margin="0,2,8,2" SelectedIndex="1">
+          <ComboBoxItem Content="计划中" /><ComboBoxItem Content="进行中" /><ComboBoxItem Content="待反馈" /><ComboBoxItem Content="已完成" />
+        </ComboBox>
+        <TextBox x:Name="FocusActionEditor" Grid.Column="2" Text="写下当前最重要目标的下一步行动" LostKeyboardFocus="Focus_OnChanged" />
+      </Grid>
+    </Border>
+    <DataGrid x:Name="ProjectsGrid" Grid.Row="2" Margin="0,12,0,0" AutoGenerateColumns="False" CanUserAddRows="False"
+              HeadersVisibility="Column" GridLinesVisibility="Horizontal" RowHeaderWidth="0" SelectionMode="Extended"
+              CellEditEnding="ProjectsGrid_OnCellEditEnding">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="优先" Binding="{Binding Priority, UpdateSourceTrigger=LostFocus}" Width="55" />
+        <DataGridTextColumn Header="项目 / 领域" Binding="{Binding ProjectName, UpdateSourceTrigger=LostFocus}" Width="140" />
+        <DataGridTextColumn Header="清单 / 子任务" Binding="{Binding Workstream, UpdateSourceTrigger=LostFocus}" Width="140" />
+        <DataGridTextColumn Header="阶段" Binding="{Binding Stage, UpdateSourceTrigger=LostFocus}" Width="100" />
+        <DataGridTextColumn Header="负责人 / 协作者" Binding="{Binding OwnerCollaborators, UpdateSourceTrigger=LostFocus}" Width="130" />
+        <DataGridTextColumn Header="相关方 / 备注" Binding="{Binding StakeholdersNotes, UpdateSourceTrigger=LostFocus}" Width="160" />
+        <DataGridTextColumn Header="最近更新" Binding="{Binding LastUpdated, UpdateSourceTrigger=LostFocus}" Width="95" />
+        <DataGridTextColumn Header="下次跟进" Binding="{Binding NextFollowUp, UpdateSourceTrigger=LostFocus}" Width="95" />
+        <DataGridTextColumn Header="截止日期" Binding="{Binding Deadline, UpdateSourceTrigger=LostFocus}" Width="95" />
+        <DataGridTextColumn Header="下一步" Binding="{Binding NextAction, UpdateSourceTrigger=LostFocus}" Width="180" />
+      </DataGrid.Columns>
+    </DataGrid>
+    <Grid Grid.Row="3" Margin="0,8,0,0">
+      <StackPanel Orientation="Horizontal">
+        <Button Content="新增项目" Click="AddProject_OnClick" />
+        <Button Content="删除所选" Click="DeleteProjects_OnClick" />
+      </StackPanel>
+      <Button Content="完成" Width="86" HorizontalAlignment="Right" Click="Done_OnClick" />
+    </Grid>
+  </Grid>
+</Window>

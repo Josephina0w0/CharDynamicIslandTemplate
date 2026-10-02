@@ -1,0 +1,44 @@
+{
+  "appName": "黄少天效率岛",
+  "characterName": "黄少天",
+  "storageId": "HuangShaotianEfficiencyIsland.Windows",
+  "mutexId": "com.josephina.huang-shaotian-efficiency-island.windows",
+  "companionStatusText": "抢占进度",
+  "titles": {
+    "working": "黄少天工作中", "breakTime": "休息倒计时", "idle": "黄少天待命中",
+    "alert": "黄少天有话说", "ai": "Codex 任务完成", "water": "喝水时间",
+    "reminderFirst": "喝水时间", "reminderSecond": "黄少天有话说",
+    "reminderThird": "黄少天有话说", "reminderFourth": "黄少天有话说"
+  },
+  "details": {
+    "working": "状态不错！继续推进，别给拖延留空当！",
+    "breakTime": "休息就认真休息！五分钟之后回来继续！",
+    "idle": "还没新任务？行，那就先整理装备，等待适合的时机！",
+    "alert": "哔哔哔哔————！",
+    "ai": "做完了做完了！快验收，别让结果在那儿干等！",
+    "water": "喝水喝水喝水！现在，马上，多多喝水身体健康！",
+    "reminderFirst": "喝水喝水喝水！现在，马上，多多喝水身体健康！",
+    "reminderSecond": "起来动一动！坐太久浑身上下都要僵硬了，快快快！",
+    "reminderThird": "午休时间到！劳逸结合！该休息的时候就是要好好休息！",
+    "reminderFourth": "到点收尾！不要再继续了！状态和精力不要等耗尽再停下！"
+  },
+  "reminders": [
+    { "id": "water", "title": "喝水", "schedule": "每 2 小时", "enabled": true },
+    { "id": "move", "title": "起来活动", "schedule": "每 1 小时", "enabled": true },
+    { "id": "noon", "title": "午休", "schedule": "11:00", "enabled": true },
+    { "id": "offwork", "title": "下班", "schedule": "16:30", "enabled": true }
+  ],
+  "panelAssets": { "alert": "alert" },
+  "panelPlacements": {
+    "working": { "height": 310, "bottom": 50, "right": 10 },
+    "breakTime": { "height": 282, "bottom": 104, "right": 12 },
+    "water": { "height": 238, "bottom": 150, "right": 0 },
+    "reminderFirst": { "height": 238, "bottom": 150, "right": 0 },
+    "idle": { "height": 219, "bottom": 150, "right": 0 },
+    "reminderSecond": { "height": 330, "bottom": 24, "right": 10 },
+    "reminderThird": { "height": 232, "bottom": 150, "right": 42 },
+    "reminderFourth": { "height": 310, "bottom": 81, "right": 12 },
+    "alert": { "height": 230, "bottom": 150, "right": 42 },
+    "ai": { "height": 230, "bottom": 64, "right": 12 }
+  }
+}

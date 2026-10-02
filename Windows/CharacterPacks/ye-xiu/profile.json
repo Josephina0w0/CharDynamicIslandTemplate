@@ -1,0 +1,45 @@
+{
+  "appName": "叶修效率岛",
+  "characterName": "叶修",
+  "storageId": "YeXiuEfficiencyIsland.Windows",
+  "mutexId": "com.josephina.ye-xiu-efficiency-island.windows",
+  "companionStatusText": "在线",
+  "titles": {
+    "working": "叶修工作中", "breakTime": "休息倒计时", "idle": "叶修待命中",
+    "alert": "叶修提醒", "ai": "Codex 任务完成", "water": "喝水时间",
+    "reminderFirst": "喝水时间", "reminderSecond": "叶修提醒",
+    "reminderThird": "叶修提醒", "reminderFourth": "叶修提醒"
+  },
+  "details": {
+    "working": "在线。按自己的节奏来。",
+    "breakTime": "休息五分钟。状态养好，下一轮更稳。",
+    "idle": "人先歇会儿，思路不掉线。",
+    "alert": "提醒到了。看一眼，顺手处理。",
+    "ai": "新结果到了。先验收，再开下一项。",
+    "water": "喝口水。手速重要，续航也重要。",
+    "reminderFirst": "喝口水。手速重要，续航也重要。",
+    "reminderSecond": "起来活动一下。坐得再稳，也得换换状态。",
+    "reminderThird": "到中场了。看一眼进度，再决定下一步。",
+    "reminderFourth": "今天先到这里。该收尾的收尾，别无限加时。"
+  },
+  "reminders": [
+    { "id": "water", "title": "喝水", "schedule": "每 2 小时", "enabled": true },
+    { "id": "move", "title": "起来走走", "schedule": "每 1 小时", "enabled": true },
+    { "id": "noon", "title": "午间复盘", "schedule": "12:00", "enabled": true },
+    { "id": "offwork", "title": "收工", "schedule": "19:30", "enabled": true }
+  ],
+  "islandAssets": { "alert": "panel-ai" },
+  "panelAssets": { "alert": "alert" },
+  "panelPlacements": {
+    "working": { "height": 310, "bottom": 72, "right": 42 },
+    "breakTime": { "height": 268.5, "bottom": 43.5, "right": 10 },
+    "water": { "height": 250, "bottom": 150, "right": 0 },
+    "reminderFirst": { "height": 250, "bottom": 150, "right": 0 },
+    "idle": { "height": 219, "bottom": 150, "right": 0 },
+    "reminderSecond": { "height": 248, "bottom": 150, "right": 0 },
+    "reminderThird": { "height": 230, "bottom": 150, "right": 0 },
+    "reminderFourth": { "height": 310, "bottom": 81, "right": 12 },
+    "alert": { "height": 230, "bottom": 150, "right": 0 },
+    "ai": { "height": 230, "bottom": 150, "right": 0 }
+  }
+}

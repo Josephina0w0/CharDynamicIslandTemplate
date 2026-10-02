@@ -2,6 +2,7 @@ import Cocoa
 import ApplicationServices
 import CoreGraphics
 import IOKit.pwr_mgt
+import ServiceManagement
 
 enum CharacterMode {
     case idle
@@ -269,6 +270,7 @@ final class AppState {
         }
 
         dailyRecords = Self.loadDailyRecords()
+        startAtLoginEnabled = SMAppService.mainApp.status == .enabled
         applyTodayRecord()
         saveReminders()
     }
@@ -341,6 +343,25 @@ final class AppState {
             IOPMAssertionRelease(sleepAssertionID)
             sleepAssertionID = 0
         }
+    }
+
+    @discardableResult
+    func setStartAtLogin(_ enabled: Bool) -> Bool {
+        let service = SMAppService.mainApp
+        do {
+            if enabled {
+                if service.status != .enabled {
+                    try service.register()
+                }
+            } else if service.status == .enabled || service.status == .requiresApproval {
+                try service.unregister()
+            }
+        } catch {
+            startAtLoginEnabled = service.status == .enabled
+            return false
+        }
+        startAtLoginEnabled = service.status == .enabled
+        return startAtLoginEnabled == enabled
     }
 
     func updateReminder(id: String, enabled: Bool? = nil, title: String? = nil, schedule: String? = nil) {
@@ -1569,8 +1590,21 @@ final class ControlPanelViewController: NSViewController, NSTextFieldDelegate {
         case "nosleep":
             state.enableNoSleep(sender.state == .on)
         case "login":
-            state.startAtLoginEnabled = sender.state == .on
-            island.show(mode: .alert, detail: "登录启动设置已保存。", autoHideAfter: 4)
+            let enabled = sender.state == .on
+            if state.setStartAtLogin(enabled) {
+                island.show(
+                    mode: .alert,
+                    detail: enabled ? "已设置为登录时启动。" : "已关闭登录时启动。",
+                    autoHideAfter: 4
+                )
+            } else {
+                sender.state = state.startAtLoginEnabled ? .on : .off
+                island.show(
+                    mode: .alert,
+                    detail: "没有成功修改登录项。请在系统设置的登录项中检查角色效率岛。",
+                    autoHideAfter: 7
+                )
+            }
         default:
             if let id = sender.identifier?.rawValue.replacingOccurrences(of: "reminder-enabled-", with: ""),
                sender.identifier?.rawValue.hasPrefix("reminder-enabled-") == true {

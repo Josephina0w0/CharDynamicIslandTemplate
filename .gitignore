@@ -11,3 +11,6 @@ xcuserdata/
 *.dSYM
 *.log
 *.zip
+**/bin/
+**/obj/
+.vs/

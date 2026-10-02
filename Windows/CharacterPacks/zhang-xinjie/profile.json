@@ -1,0 +1,44 @@
+{
+  "appName": "张新杰效率岛",
+  "characterName": "张新杰",
+  "storageId": "ZhangXinjieEfficiencyIsland.Windows",
+  "mutexId": "com.josephina.zhang-xinjie-efficiency-island.windows",
+  "companionStatusText": "按计划进行中",
+  "titles": {
+    "working": "张新杰工作中", "breakTime": "休息倒计时", "idle": "张新杰待命中",
+    "alert": "张新杰提醒", "ai": "Codex 任务完成", "water": "补充水分",
+    "reminderFirst": "补充水分", "reminderSecond": "张新杰提醒",
+    "reminderThird": "张新杰提醒", "reminderFourth": "张新杰提醒"
+  },
+  "details": {
+    "working": "节奏已经安排好，照计划推进吧。",
+    "breakTime": "先恢复状态。休息也是计划的一部分。",
+    "idle": "暂时没有新任务。整理好状态，等下一步。",
+    "alert": "嗯？提醒时间到。",
+    "ai": "结果已经准备好。先验收，再决定下一步。",
+    "water": "喝口水。别把身体状态留到最后处理。",
+    "reminderFirst": "喝口水。状态稳定，后面的安排才不会乱。",
+    "reminderSecond": "起来走一走。调整一下，回来会更专注。",
+    "reminderThird": "看一下当前进度。保留有效的，调整不合适的。",
+    "reminderFourth": "今天先收好尾。清楚地结束，明天才容易开始。"
+  },
+  "reminders": [
+    { "id": "water", "title": "喝水", "schedule": "每 2 小时", "enabled": true },
+    { "id": "move", "title": "起身活动", "schedule": "每 1 小时", "enabled": true },
+    { "id": "noon", "title": "午间校准", "schedule": "11:00", "enabled": true },
+    { "id": "offwork", "title": "下班", "schedule": "16:30", "enabled": true }
+  ],
+  "panelAssets": { "alert": "alert" },
+  "panelPlacements": {
+    "working": { "height": 310, "bottom": 72, "right": 42 },
+    "breakTime": { "height": 282, "bottom": 104, "right": 12 },
+    "water": { "height": 238, "bottom": 128, "right": -32 },
+    "reminderFirst": { "height": 238, "bottom": 128, "right": -32 },
+    "idle": { "height": 330, "bottom": 52, "right": 42 },
+    "reminderSecond": { "height": 310, "bottom": 72, "right": 42 },
+    "reminderThird": { "height": 232, "bottom": 150, "right": 42 },
+    "reminderFourth": { "height": 310, "bottom": 64, "right": 42 },
+    "alert": { "height": 230, "bottom": 150, "right": 42 },
+    "ai": { "height": 230, "bottom": 150, "right": 42 }
+  }
+}
