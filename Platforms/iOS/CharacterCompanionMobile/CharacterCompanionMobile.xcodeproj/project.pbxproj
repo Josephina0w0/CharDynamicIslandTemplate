@@ -1,0 +1,534 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		100000000000000000000101 /* CharacterCompanionMobileApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000001 /* CharacterCompanionMobileApp.swift */; };
+		100000000000000000000102 /* MobileAppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000002 /* MobileAppStore.swift */; };
+		100000000000000000000103 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000003 /* ContentView.swift */; };
+		100000000000000000000104 /* CompanionProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000004 /* CompanionProfile.swift */; };
+		100000000000000000000105 /* SharedModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000005 /* SharedModels.swift */; };
+		100000000000000000000106 /* SharedStateRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000006 /* SharedStateRepository.swift */; };
+		100000000000000000000107 /* CompanionActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000007 /* CompanionActivityAttributes.swift */; };
+		100000000000000000000108 /* CompanionActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000008 /* CompanionActions.swift */; };
+		100000000000000000000109 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000010 /* Assets.xcassets */; };
+		100000000000000000000110 /* TrackerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000019 /* TrackerModels.swift */; };
+		100000000000000000000111 /* TrackerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000020 /* TrackerView.swift */; };
+		100000000000000000000112 /* RecordsAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000021 /* RecordsAnalytics.swift */; };
+		100000000000000000000113 /* RecordsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000022 /* RecordsView.swift */; };
+		100000000000000000000201 /* CharacterCompanionWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000009 /* CharacterCompanionWidgets.swift */; };
+		100000000000000000000202 /* CompanionProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000004 /* CompanionProfile.swift */; };
+		100000000000000000000203 /* SharedModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000005 /* SharedModels.swift */; };
+		100000000000000000000204 /* SharedStateRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000006 /* SharedStateRepository.swift */; };
+		100000000000000000000205 /* CompanionActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000007 /* CompanionActivityAttributes.swift */; };
+		100000000000000000000206 /* CompanionActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000008 /* CompanionActions.swift */; };
+		100000000000000000000207 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000010 /* Assets.xcassets */; };
+		100000000000000000000301 /* CharacterCompanionWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 100000000000000000000015 /* CharacterCompanionWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		100000000000000000000401 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 100000000000000000000700 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 100000000000000000000802;
+			remoteInfo = CharacterCompanionWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		100000000000000000000501 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				100000000000000000000301 /* CharacterCompanionWidgetExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		100000000000000000000001 /* CharacterCompanionMobileApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterCompanionMobileApp.swift; sourceTree = "<group>"; };
+		100000000000000000000002 /* MobileAppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileAppStore.swift; sourceTree = "<group>"; };
+		100000000000000000000003 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		100000000000000000000004 /* CompanionProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionProfile.swift; sourceTree = "<group>"; };
+		100000000000000000000005 /* SharedModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedModels.swift; sourceTree = "<group>"; };
+		100000000000000000000006 /* SharedStateRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStateRepository.swift; sourceTree = "<group>"; };
+		100000000000000000000007 /* CompanionActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionActivityAttributes.swift; sourceTree = "<group>"; };
+		100000000000000000000008 /* CompanionActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionActions.swift; sourceTree = "<group>"; };
+		100000000000000000000009 /* CharacterCompanionWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterCompanionWidgets.swift; sourceTree = "<group>"; };
+		100000000000000000000010 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		100000000000000000000011 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		100000000000000000000012 /* CharacterCompanionMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CharacterCompanionMobile.entitlements; sourceTree = "<group>"; };
+		100000000000000000000013 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		100000000000000000000014 /* CharacterCompanionWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CharacterCompanionWidgetExtension.entitlements; sourceTree = "<group>"; };
+		100000000000000000000015 /* CharacterCompanionWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CharacterCompanionWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		100000000000000000000016 /* CharacterCompanionMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CharacterCompanionMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		100000000000000000000017 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		100000000000000000000018 /* TECHNICAL_FEASIBILITY.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TECHNICAL_FEASIBILITY.md; sourceTree = "<group>"; };
+		100000000000000000000019 /* TrackerModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerModels.swift; sourceTree = "<group>"; };
+		100000000000000000000020 /* TrackerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerView.swift; sourceTree = "<group>"; };
+		100000000000000000000021 /* RecordsAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsAnalytics.swift; sourceTree = "<group>"; };
+		100000000000000000000022 /* RecordsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		100000000000000000000601 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		100000000000000000000602 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		100000000000000000000701 = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000702 /* Sources */,
+				100000000000000000000703 /* Shared */,
+				100000000000000000000704 /* WidgetExtension */,
+				100000000000000000000705 /* Resources */,
+				100000000000000000000706 /* Docs */,
+				100000000000000000000707 /* Products */,
+				100000000000000000000017 /* README.md */,
+			);
+			sourceTree = "<group>";
+		};
+		100000000000000000000702 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000001 /* CharacterCompanionMobileApp.swift */,
+				100000000000000000000002 /* MobileAppStore.swift */,
+				100000000000000000000003 /* ContentView.swift */,
+				100000000000000000000019 /* TrackerModels.swift */,
+				100000000000000000000020 /* TrackerView.swift */,
+				100000000000000000000021 /* RecordsAnalytics.swift */,
+				100000000000000000000022 /* RecordsView.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		100000000000000000000703 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000004 /* CompanionProfile.swift */,
+				100000000000000000000005 /* SharedModels.swift */,
+				100000000000000000000006 /* SharedStateRepository.swift */,
+				100000000000000000000007 /* CompanionActivityAttributes.swift */,
+				100000000000000000000008 /* CompanionActions.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		100000000000000000000704 /* WidgetExtension */ = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000009 /* CharacterCompanionWidgets.swift */,
+				100000000000000000000013 /* Info.plist */,
+				100000000000000000000014 /* CharacterCompanionWidgetExtension.entitlements */,
+			);
+			path = WidgetExtension;
+			sourceTree = "<group>";
+		};
+		100000000000000000000705 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000010 /* Assets.xcassets */,
+				100000000000000000000011 /* Info.plist */,
+				100000000000000000000012 /* CharacterCompanionMobile.entitlements */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		100000000000000000000706 /* Docs */ = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000018 /* TECHNICAL_FEASIBILITY.md */,
+			);
+			path = Docs;
+			sourceTree = "<group>";
+		};
+		100000000000000000000707 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000016 /* CharacterCompanionMobile.app */,
+				100000000000000000000015 /* CharacterCompanionWidgetExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		100000000000000000000801 /* CharacterCompanionMobile */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 100000000000000000000A01 /* Build configuration list for PBXNativeTarget "CharacterCompanionMobile" */;
+			buildPhases = (
+				100000000000000000000901 /* Sources */,
+				100000000000000000000601 /* Frameworks */,
+				100000000000000000000903 /* Resources */,
+				100000000000000000000501 /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				100000000000000000000402 /* PBXTargetDependency */,
+			);
+			name = CharacterCompanionMobile;
+			productName = CharacterCompanionMobile;
+			productReference = 100000000000000000000016 /* CharacterCompanionMobile.app */;
+			productType = "com.apple.product-type.application";
+		};
+		100000000000000000000802 /* CharacterCompanionWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 100000000000000000000A02 /* Build configuration list for PBXNativeTarget "CharacterCompanionWidgetExtension" */;
+			buildPhases = (
+				100000000000000000000902 /* Sources */,
+				100000000000000000000602 /* Frameworks */,
+				100000000000000000000904 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CharacterCompanionWidgetExtension;
+			productName = CharacterCompanionWidgetExtension;
+			productReference = 100000000000000000000015 /* CharacterCompanionWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		100000000000000000000700 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					100000000000000000000801 = {
+						CreatedOnToolsVersion = 27.0;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
+					};
+					100000000000000000000802 = {
+						CreatedOnToolsVersion = 27.0;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
+					};
+				};
+			};
+			buildConfigurationList = 100000000000000000000A03 /* Build configuration list for PBXProject "CharacterCompanionMobile" */;
+			compatibilityVersion = "Xcode 15.0";
+			developmentRegion = "zh-Hans";
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				"zh-Hans",
+				en,
+				Base,
+			);
+			mainGroup = 100000000000000000000701;
+			productRefGroup = 100000000000000000000707 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				100000000000000000000801 /* CharacterCompanionMobile */,
+				100000000000000000000802 /* CharacterCompanionWidgetExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		100000000000000000000903 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				100000000000000000000109 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		100000000000000000000904 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				100000000000000000000207 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		100000000000000000000901 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				100000000000000000000101 /* CharacterCompanionMobileApp.swift in Sources */,
+				100000000000000000000102 /* MobileAppStore.swift in Sources */,
+				100000000000000000000103 /* ContentView.swift in Sources */,
+				100000000000000000000104 /* CompanionProfile.swift in Sources */,
+				100000000000000000000105 /* SharedModels.swift in Sources */,
+				100000000000000000000106 /* SharedStateRepository.swift in Sources */,
+				100000000000000000000107 /* CompanionActivityAttributes.swift in Sources */,
+				100000000000000000000108 /* CompanionActions.swift in Sources */,
+				100000000000000000000110 /* TrackerModels.swift in Sources */,
+				100000000000000000000111 /* TrackerView.swift in Sources */,
+				100000000000000000000112 /* RecordsAnalytics.swift in Sources */,
+				100000000000000000000113 /* RecordsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		100000000000000000000902 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				100000000000000000000201 /* CharacterCompanionWidgets.swift in Sources */,
+				100000000000000000000202 /* CompanionProfile.swift in Sources */,
+				100000000000000000000203 /* SharedModels.swift in Sources */,
+				100000000000000000000204 /* SharedStateRepository.swift in Sources */,
+				100000000000000000000205 /* CompanionActivityAttributes.swift in Sources */,
+				100000000000000000000206 /* CompanionActions.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		100000000000000000000402 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 100000000000000000000802 /* CharacterCompanionWidgetExtension */;
+			targetProxy = 100000000000000000000401 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		100000000000000000000B01 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		100000000000000000000B02 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		100000000000000000000B03 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Resources/CharacterCompanionMobile.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 15;
+				DEVELOPMENT_TEAM = Y4J29H49LK;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = local.codex.yuwenzhou.companion.mobile;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		100000000000000000000B04 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Resources/CharacterCompanionMobile.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 15;
+				DEVELOPMENT_TEAM = Y4J29H49LK;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = local.codex.yuwenzhou.companion.mobile;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		100000000000000000000B05 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = WidgetExtension/CharacterCompanionWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 15;
+				DEVELOPMENT_TEAM = Y4J29H49LK;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WidgetExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = local.codex.yuwenzhou.companion.mobile.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		100000000000000000000B06 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = WidgetExtension/CharacterCompanionWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 15;
+				DEVELOPMENT_TEAM = Y4J29H49LK;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WidgetExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = local.codex.yuwenzhou.companion.mobile.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		100000000000000000000A01 /* Build configuration list for PBXNativeTarget "CharacterCompanionMobile" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				100000000000000000000B03 /* Debug */,
+				100000000000000000000B04 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		100000000000000000000A02 /* Build configuration list for PBXNativeTarget "CharacterCompanionWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				100000000000000000000B05 /* Debug */,
+				100000000000000000000B06 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		100000000000000000000A03 /* Build configuration list for PBXProject "CharacterCompanionMobile" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				100000000000000000000B01 /* Debug */,
+				100000000000000000000B02 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 100000000000000000000700 /* Project object */;
+}

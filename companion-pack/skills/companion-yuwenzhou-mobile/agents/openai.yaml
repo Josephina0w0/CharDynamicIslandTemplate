@@ -1,0 +1,9 @@
+interface:
+  display_name: "陪伴版-喻文州"
+  short_description: "以喻文州手机版为蓝本制作角色陪伴 App"
+  icon_small: "./assets/app-icon.png"
+  icon_large: "./assets/app-icon.png"
+  brand_color: "#315A88"
+  default_prompt: "Use $companion-yuwenzhou-mobile to create or improve a native iPhone/iPad character Companion app from the 喻文州 baseline."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,58 @@
+name: iOS Companion
+
+on:
+  push:
+    branches: [companion]
+    paths:
+      - "Platforms/iOS/CharacterCompanionMobile/**"
+      - "companion-pack/skills/companion-yuwenzhou-mobile/**"
+      - ".github/workflows/ios-companion.yml"
+  pull_request:
+    paths:
+      - "Platforms/iOS/CharacterCompanionMobile/**"
+      - "companion-pack/skills/companion-yuwenzhou-mobile/**"
+      - ".github/workflows/ios-companion.yml"
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Validate blueprint
+        run: |
+          companion-pack/skills/companion-yuwenzhou-mobile/scripts/validate_mobile_companion.sh \
+            Platforms/iOS/CharacterCompanionMobile
+
+      - name: Test state machine
+        run: |
+          xcrun swiftc -module-cache-path "$RUNNER_TEMP/core-module-cache" \
+            Platforms/iOS/CharacterCompanionMobile/Shared/CompanionProfile.swift \
+            Platforms/iOS/CharacterCompanionMobile/Shared/SharedModels.swift \
+            Platforms/iOS/CharacterCompanionMobile/Tests/CoreStateMachineTests.swift \
+            -o "$RUNNER_TEMP/core-state-tests"
+          "$RUNNER_TEMP/core-state-tests"
+
+      - name: Test records analytics
+        run: |
+          xcrun swiftc -module-cache-path "$RUNNER_TEMP/records-module-cache" \
+            Platforms/iOS/CharacterCompanionMobile/Shared/CompanionProfile.swift \
+            Platforms/iOS/CharacterCompanionMobile/Shared/SharedModels.swift \
+            Platforms/iOS/CharacterCompanionMobile/Sources/RecordsAnalytics.swift \
+            Platforms/iOS/CharacterCompanionMobile/Tests/RecordsAnalyticsTests.swift \
+            -o "$RUNNER_TEMP/records-analytics-tests"
+          "$RUNNER_TEMP/records-analytics-tests"
+
+      - name: Build iOS Simulator app
+        run: |
+          xcodebuild -quiet \
+            -project Platforms/iOS/CharacterCompanionMobile/CharacterCompanionMobile.xcodeproj \
+            -scheme CharacterCompanionMobile \
+            -sdk iphonesimulator \
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath "$RUNNER_TEMP/CharacterCompanionMobile-DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            build

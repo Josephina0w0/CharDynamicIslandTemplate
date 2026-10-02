@@ -2,6 +2,17 @@
 
 This repository is a clean macOS character-efficiency-island template.
 
+The repository also contains the maintained native iOS/iPadOS 喻文州 Companion baseline at `Platforms/iOS/CharacterCompanionMobile`. For that project, load `companion-pack/skills/companion-yuwenzhou-mobile/SKILL.md` and follow its architecture and QA references. Do not apply macOS status-item, Universal 2, or input-monitoring requirements to the mobile target.
+
+Mobile Companion invariants:
+
+- Preserve the shared App Group event ledger across the app, Widget, and Live Activity.
+- Keep Widget timers on SwiftUI timer intervals and retain the bounded recovery refresh.
+- Keep EventKit Calendar and Reminders read-only.
+- Derive records only from work intervals, including open and cross-midnight intervals.
+- New characters must be copied into independent projects with unique bundle IDs, App Groups, URL schemes, and Widget kinds.
+- Build and test the app plus Widget extension together; matching build numbers are required.
+
 - Read `README.md`, `docs/COPYWRITING.md`, `docs/IMAGE_SLOTS.md`, and `docs/AI_CUSTOMIZATION.md` before customizing.
 - Preserve the full feature set unless the user explicitly asks to remove something.
 - Never collect or store typed content. Input monitoring may only keep aggregate counts and categories.

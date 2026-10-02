@@ -21,6 +21,14 @@
 - [Companion 通用开发包](companion-pack/)：角色 Profile、架构、图片归一化、测试与发布工具。
 - [Character Companion Builder Skill](companion-pack/skills/character-companion-builder/SKILL.md)：制作新角色或新 Tracker 领域时的统一工作流。
 - [产品 Roadmap](companion-pack/skills/character-companion-builder/references/roadmap.md) 与 [完整 Workflow](companion-pack/skills/character-companion-builder/references/workflow.md)。
+- [陪伴版-喻文州 iPhone/iPad 基线](Platforms/iOS/CharacterCompanionMobile/)：原生 SwiftUI App、大小 Widget、Live Activity、提醒、Tracker 与日/周/月记录。
+- [陪伴版-喻文州完整包](companion-pack/陪伴版-喻文州/) 与 [移动端 Skill](companion-pack/skills/companion-yuwenzhou-mobile/SKILL.md)：用于在其他会话或电脑上继续维护，并以当前版本制作其他角色。
+
+移动端 Skill 安装后可以在 Codex 新会话中直接调用：
+
+```text
+$companion-yuwenzhou-mobile 请以陪伴版-喻文州为蓝本，为【角色名】制作手机版陪伴 App。
+```
 
 通用版保持输入隐私，只统计按键与鼠标操作的数量和类别，不保存具体输入内容；iCloud 日历访问默认为只读。发行构建为 Universal 2，同时支持 Apple 芯片与 Intel Mac。
 

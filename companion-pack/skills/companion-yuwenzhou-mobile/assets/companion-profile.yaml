@@ -1,0 +1,47 @@
+product:
+  package_name: "陪伴版-喻文州"
+  profile_id: "yu-wenzhou"
+  display_name: "喻文州"
+  bundle_identifier: "local.codex.yuwenzhou.companion.mobile"
+  widget_bundle_identifier: "local.codex.yuwenzhou.companion.mobile.widget"
+  app_group: "group.local.codex.yuwenzhou.companion.mobile"
+  url_scheme: "yuwenzhou-companion"
+  widget_kind: "YuWenzhouCompanionWidget"
+  version: "0.1.0"
+  build: 15
+  minimum_ios: "17.0"
+
+character:
+  name: "喻文州"
+  working_title: "喻文州工作中"
+  resting_title: "喻文州休息中"
+  working_phrase: "稳步推进"
+  resting_phrase: "先恢复状态。休息也是计划的一部分。"
+  break_finished_question: "五分钟到了。要结束休息吗？"
+  palette:
+    primary: "#315A88"
+    secondary: "#D9E6F4"
+    dark_primary: "#86ADD6"
+    default_work: "#315A88"
+
+features:
+  iphone: true
+  ipad: true
+  watchos: "roadmap-only"
+  small_widget: true
+  medium_widget: true
+  live_activity: true
+  dynamic_island: true
+  editable_reminders: 4
+  tracker: true
+  records: true
+  calendar_reminders_access: "read-only"
+
+storage:
+  shared_state: "App Group/companion-state-v1.json"
+  tracker: "SwiftData main-app container"
+  local_only: true
+
+distribution:
+  current: "personal-device"
+  public_rights_required: true

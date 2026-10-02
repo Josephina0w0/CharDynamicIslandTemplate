@@ -1,0 +1,25 @@
+{
+  "packageName": "陪伴版-喻文州",
+  "skillName": "companion-yuwenzhou-mobile",
+  "version": "0.1.0",
+  "build": 15,
+  "bundleIdentifier": "local.codex.yuwenzhou.companion.mobile",
+  "widgetBundleIdentifier": "local.codex.yuwenzhou.companion.mobile.widget",
+  "appGroup": "group.local.codex.yuwenzhou.companion.mobile",
+  "minimumIOS": "17.0",
+  "sourcePath": "Platforms/iOS/CharacterCompanionMobile",
+  "skillPath": "companion-pack/skills/companion-yuwenzhou-mobile",
+  "githubRepository": "https://github.com/Josephina0w0/CharDynamicIslandTemplate",
+  "githubBranch": "companion",
+  "releaseDate": "2026-10-02",
+  "features": [
+    "companion summary",
+    "small and medium interactive widgets",
+    "lock screen Live Activity and Dynamic Island",
+    "editable local reminders",
+    "Daily Top 3 and local project Tracker",
+    "read-only EventKit calendar and reminders",
+    "daily weekly monthly work records",
+    "dynamic widget timer with recovery refresh"
+  ]
+}
